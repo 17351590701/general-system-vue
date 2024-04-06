@@ -15,11 +15,12 @@
     >
     </el-tab-pane>
   </el-tabs>
+  <button @click="console.log(tabStore.tabList)">打印</button>
 </template>
 
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
-import {type Tab, useTabStore} from '@/stores/tabs'
+import {type Tab,  useTabStore} from '@/stores/tabs'
 import {useRoute, useRouter} from "vue-router";
 import type {TabsPaneContext} from "element-plus";
 //选中的选项卡数据
@@ -63,8 +64,9 @@ const clickBtn = (pane: TabsPaneContext) => {
   console.log(pane)
   const {props} = pane
   //跳转路由
-  router.push({path:props.name as string})
+  router.push({path: props.name as string})
 }
+
 //点击左侧菜单时，添加为选项卡
 const addTab = () => {
   const {path, meta} = route
@@ -76,22 +78,22 @@ const addTab = () => {
 }
 
 //设置选项卡激活状态
-function setActiveTab(){
-  activeTab.value=route.path
+function setActiveTab() {
+  activeTab.value = route.path
 }
-//添加选项卡：监听当前路由变化
-watch(
-    ()=>route.path,
-    () => {
+//保证页面刷新后只保存有上次激活的选项卡
+onMounted(() => {
   setActiveTab()
   addTab()
 })
 
-//保证页面刷新后保存有选项卡
-onMounted(() =>{
-  setActiveTab()
-  addTab()
-})
+//添加选项卡：监听当前路由变化
+watch(
+    () => route.path,
+    () => {
+      setActiveTab()
+      addTab()
+    })
 </script>
 
 <style scoped lang="scss">

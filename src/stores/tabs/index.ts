@@ -28,5 +28,8 @@ export const useTabStore = defineStore('tabs', {
             //否则
             this.tabList.push(tab)
         }
-    }
+    },
+    //选项卡持久化，使页面刷新关闭时，tabList的值不会清空
+    persist:true
+
 })

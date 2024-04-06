@@ -14,6 +14,7 @@
       </el-header>
       <!--主要部分-->
       <el-main class="main">
+        <Tabs></Tabs>
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -23,6 +24,7 @@
 <script setup lang="ts">
 import Header from "@/layout/header/Header.vue";
 import MenuBar from "@/layout/menu/MenuBar.vue";
+import Tabs from "@/layout/tabs/Tabs.vue";
 import {ref} from "vue";
 </script>
 

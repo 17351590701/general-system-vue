@@ -6,8 +6,6 @@
       :default-active="defaultActive"
       class="el-menu-vertical-demo"
       :collapse="isCollapse"
-      @open="handleOpen"
-      @close="handleClose"
       background-color="#2e4057"
       router
   >
@@ -34,6 +32,16 @@ const isCollapse = computed(() => {
   return menuStore.getCollapse
 })
 const menuList = reactive([
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: "dashboard/Index",
+    meta: {
+      title: '首页',
+      icon: 'House',
+      roles: ['sys:dashboard']
+    }
+  },
   {
     path: '/system',
     name: 'system',
@@ -110,13 +118,6 @@ const menuList = reactive([
   }
 ])
 
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-
-}
 
 </script>
 

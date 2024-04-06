@@ -15,7 +15,7 @@
   </el-menu>
 </template>
 <script setup lang="ts">
-import {computed, reactive, ref} from 'vue'
+import {computed, reactive} from 'vue'
 import MenuItem from "./MenuItem.vue";
 import MenuLogo from "./menuLogo.vue";
 import {useRoute} from "vue-router";

@@ -1,5 +1,6 @@
 <template>
-  <div class="logo">
+  <!--点击此div也会触发收缩菜单操作-->
+  <div class="logo" @click="menuStore.setCollapse(!menuStore.getCollapse)">
     <img :src="logo" alt="logo图片"/>
     <!--因为文字快速显现的速度比菜单扩展快，会强行撑开，所以需要对文字进行处理-->
     <span v-if="show" class="logo-title">{{ title }}</span>
@@ -16,7 +17,7 @@ const show = ref(true)
 watchEffect(()=>{
 // 如果menuStore.getCollapse的值为false,即卷帘展开
   if(!menuStore.getCollapse){
-    // 延时250毫秒后，将show的值设置为true
+    // 延时250毫秒后，将show的值设置为true，显示文字
     setTimeout(()=>{
       show.value = true
     },250)

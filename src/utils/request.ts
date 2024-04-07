@@ -1,3 +1,5 @@
+// noinspection Annotator
+
 import axios,
 {type AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse, type AxiosRequestConfig} from 'axios';
 import {ElMessage} from 'element-plus'
@@ -14,6 +16,7 @@ export interface Result<T = any> {
     data: T;
 }
 
+// noinspection Annotator,JSUnusedGlobalSymbols
 class request {
     //axios实例化
     private instance: AxiosInstance;
@@ -50,7 +53,7 @@ class request {
         //请求返回之后的处理，统一处理返回值
         this.instance.interceptors.response.use(
             (res: AxiosResponse) => {
-                if (res.data.code === 200) {
+                if (res.data.code === '0') {
                     return res.data;
                 } else {
                     ElMessage.error(res.data.msg || '接口报错!');
@@ -127,7 +130,7 @@ class request {
 
     //封装get请求
     get<T = Result>(url: string, params?: object): Promise<T> {
-        return this.instance.get(url, {params})
+        return this.instance.get(url, params)
     }
 
     //封装post请求
@@ -144,12 +147,11 @@ class request {
     delete<T = Result>(url: string): Promise<T> {
         return this.instance.delete(url)
     }
-
     //图片上传
     upload<T = Result>(url: string, params?: object): Promise<T> {
         return this.instance.post(url, params, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+            headers:{
+                'Content-Type':'multipart/form-data'
             }
         })
     }

@@ -15,12 +15,11 @@
     >
     </el-tab-pane>
   </el-tabs>
-  <button @click="console.log(tabStore.tabList)">打印</button>
 </template>
 
 <script setup lang="ts">
 import {computed, onMounted, ref, watch} from "vue";
-import {type Tab,  useTabStore} from '@/stores/tabs'
+import {type Tab, useTabStore} from '@/stores/tabs'
 import {useRoute, useRouter} from "vue-router";
 import type {TabsPaneContext} from "element-plus";
 //选中的选项卡数据
@@ -81,6 +80,7 @@ const addTab = () => {
 function setActiveTab() {
   activeTab.value = route.path
 }
+
 //保证页面刷新后只保存有上次激活的选项卡
 onMounted(() => {
   setActiveTab()
@@ -97,5 +97,38 @@ watch(
 </script>
 
 <style scoped lang="scss">
+.demo-tabs {
+  margin-top: 5px;
+  margin-left: 3px;
+  width: auto;
+  height: auto;
+}
 
+:deep(.el-tabs__item.is-active) {
+  color: #fff;
+  background-color: #319874;
+  font-weight:800;
+}
+
+:deep(.el-tabs__item.is-active:hover) {
+  color: #fff;
+  font-weight:800;
+}
+
+:deep(.el-tabs__item:hover) {
+  color: #303133;
+  font-weight:600;
+}
+
+:deep(.el-tabs__item) {
+  height: 30px;
+  width: auto;
+  border-radius: 5px;
+  font-weight: 400;
+  font-family: 'HarmonyOS_Sans_SC',sans-serif;
+}
+
+:deep(.el-tabs__header) {
+  border-bottom: none !important;
+}
 </style>

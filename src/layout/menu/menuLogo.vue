@@ -26,7 +26,7 @@ watchEffect(()=>{
   }
 })
 // 定义一个响应式变量title，初始值为"通用权限系统"
-const title = ref("通用权限系统")
+const title = ref("通用系统脚手架")
 </script>
 
 

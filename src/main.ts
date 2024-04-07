@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 //创建pinia
 import { createPinia } from 'pinia'
 //pinia数据持久化操作
-import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import piniaPluginPersistence from 'pinia-plugin-persistedstate'
 import App from './App.vue'
 import router from './router'
 //引入Element plus和css样式
@@ -17,7 +17,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 //pinia数据持久化挂载
-pinia.use(piniaPluginPersistedstate)
+pinia.use(piniaPluginPersistence)
 app.use(ElementPlus)
 app.use(pinia)
 app.use(router)

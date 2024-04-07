@@ -1,10 +1,10 @@
 <!--总体布局页面-->
 <template>
   <el-container class="layout">
-<!--左侧根据MenuBar自适应做菜单宽度-->
+    <!--左侧根据MenuBar自适应做菜单宽度-->
     <el-aside width="auto" class="aside">
       <!--菜单-->
-      <MenuBar />
+      <MenuBar/>
     </el-aside>
     <!--右侧内容-->
     <el-container>
@@ -14,7 +14,10 @@
       </el-header>
       <!--主要部分-->
       <el-main class="main">
-        <Tabs></Tabs>
+        <div class="tabs">
+          <Tabs class="tabs-content"></Tabs>
+          <CloseTabs ></CloseTabs>
+        </div>
         <router-view></router-view>
       </el-main>
     </el-container>
@@ -25,19 +28,38 @@
 import Header from "@/layout/header/Header.vue";
 import MenuBar from "@/layout/menu/MenuBar.vue";
 import Tabs from "@/layout/tabs/Tabs.vue";
-import {ref} from "vue";
+import CloseTabs from "@/layout/tabs/CloseTabs.vue";
 </script>
 
 <style scoped lang="scss">
-.layout{
+.layout {
   height: 100%;
- .aside{
-   background-color: #304156;
- }
-  .header{
+
+  .aside {
+    background-color: #304156;
+    box-shadow: rgba(0, 0, 0, 0.24) 2px 3px 5px;
+  }
+
+  .main {
+    padding: 0;
+    margin: 0;
+
+    .tabs {
+      display: flex;
+      justify-content: space-between;
+      flex-grow: 1;
+      .el-tabs{
+        --el-tabs-header-height: 30px;
+      }
+    }
+  }
+
+  .header {
     background-color: #009688;
-    display:flex;
+    display: flex;
     align-items: center;
+    box-shadow: rgba(0, 0, 0, 0.24) 0 2px 5px;
+    height: 50px;
   }
 }
 

@@ -1,7 +1,4 @@
-// noinspection Annotator
-
-import axios,
-{type AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse, type AxiosRequestConfig} from 'axios';
+import axios, {type AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse, type AxiosRequestConfig} from 'axios';
 import {ElMessage} from 'element-plus'
 // axios配置
 const config = {
@@ -11,6 +8,7 @@ const config = {
 
 //定义返回值类型泛型
 export interface Result<T = any> {
+    msg: MessageParamsWithType;
     code: number;
     message: string;
     data: T;
@@ -53,7 +51,7 @@ class request {
         //请求返回之后的处理，统一处理返回值
         this.instance.interceptors.response.use(
             (res: AxiosResponse) => {
-                if (res.data.code === '0') {
+                if (res.data.code === 200) {
                     return res.data;
                 } else {
                     ElMessage.error(res.data.msg || '接口报错!');
@@ -147,14 +145,15 @@ class request {
     delete<T = Result>(url: string): Promise<T> {
         return this.instance.delete(url)
     }
-    //图片上传
-    upload<T = Result>(url: string, params?: object): Promise<T> {
-        return this.instance.post(url, params, {
-            headers:{
-                'Content-Type':'multipart/form-data'
-            }
-        })
-    }
+
+    // //图片上传
+    // upload<T = Result>(url: string, params?: object): Promise<T> {
+    //     return this.instance.post(url, params, {
+    //         headers: {
+    //             'Content-Type': 'multipart/form-data'
+    //         }
+    //     })
+    // }
 }
 
 export default new request(config);

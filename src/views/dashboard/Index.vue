@@ -23,7 +23,6 @@
 
 <script setup lang="ts">
 import SysDialog from '@/components/SysDialog.vue';
-import { reactive } from 'vue'
 import useDialog from '@/hooks/useDialog';
 //弹框属性
 const {dialog,onClose,onConfirm,onShow} =useDialog()
@@ -32,6 +31,7 @@ const addBtn=()=>{
   dialog.title="新增"
   onShow()
 }
+
 </script>
 
 <style scoped lang="scss"></style>

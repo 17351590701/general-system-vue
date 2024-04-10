@@ -6,7 +6,7 @@ export default function useDialog() {
         title: '标题',
         visible: false,
         width: 630,
-        height: 280
+        height: 280,
     })
 
 

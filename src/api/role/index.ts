@@ -8,3 +8,14 @@ export const addApi=(param:SysRole)=>{
 export const getListApi=(param:RoleListParam)=>{
 return request.get("/api/role/getList",param)
 }
+//编辑
+export const editApi=(param:SysRole)=>{
+    return request.put("/api/role",param)
+}
+//删除
+export const deleteApi=(roleId:string)=>{
+    return request.delete("/api/role"+"/"+roleId)
+}
+// export const deleteApi=(roleId:string)=>{
+//     return request.delete(`api/role/${roleId}`)
+// }

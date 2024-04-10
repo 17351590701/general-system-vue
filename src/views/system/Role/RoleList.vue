@@ -7,7 +7,7 @@
       </el-form-item>
       <el-form-item>
         <el-button icon="Search" @click="searchBtn">搜索</el-button>
-        <el-button icon="Close" type="danger" @click="resetBtn">重置</el-button>
+        <el-button icon="Close" type="danger" @click="resetBtn">清空</el-button>
         <el-button icon="Plus" type="primary" @click="addBtn">新增</el-button>
       </el-form-item>
     </el-form>
@@ -19,7 +19,7 @@
       <el-table-column label="操作" width="220" align="center">
         <!-- 插槽,接受本行数据 -->
         <template #default="scope" >
-          <el-button type="primary" icon="Edit" size="default" @click="editBtn(scope.row.roleId)">编辑</el-button>
+          <el-button type="primary" icon="Edit" size="default" @click="editBtn(scope.row)">编辑</el-button>
         <el-button type="danger" icon="Delete" size="default" @click="deleteBtn(scope.row.roleId)">删除</el-button>
         </template>
         </el-table-column>
@@ -44,6 +44,7 @@
         :height="dialog.height"
         @on-close="onClose"
         @on-confirm="commit"
+        :before-close="onClose"
     >
       <!-- 插槽，向封装的弹框中添加内容,并添加表单规则 -->
       <template v-slot:content>
@@ -72,36 +73,29 @@ import {ref, reactive, onMounted, nextTick} from 'vue'
 import SysDialog from '@/components/SysDialog.vue';
 import useDialog from '@/hooks/useDialog';
 import {ElMessage, type FormInstance} from 'element-plus';
-import {addApi, getListApi} from '@/api/role'
+import {addApi, getListApi,editApi,deleteApi} from '@/api/role'
 import type {RoleListParam} from "@/api/role/RoleModel";
 import {type SysRole} from '@/api/role/RoleModel';
+import useInstance from '@/hooks/useInstance';
+//获取全局global
+const {global} = useInstance()
 //表单Ref属性
 const addRef = ref<FormInstance>()
 //弹框属性
 const {dialog, onClose, onShow} = useDialog()
-
-//表单绑定的对象
-const searchParam:RoleListParam= reactive({
-  currentPage: 1,
-  pageSize: 10,
-  roleName: '',
-  total: 0
-})
-
-//新增按钮
-const addBtn = () => {
-  dialog.title = "新增"
-  dialog.height = 150
-  //显示弹框
-  onShow()
-}
 //新增表单对象
 const addModel = reactive({
   roleId: '',
   roleName: '',
   remark: ''
 })
-
+//表单绑定的对象，如果传到后端parm中的角色名不为空，则将角色名作为查询条件，使用like操作符进行模糊查询
+const searchParam:RoleListParam= reactive({
+  currentPage: 1,
+  pageSize: 10,
+  roleName: '',
+  total: 0
+})
 //表单验证规则,必须输入roleName
 const rules = reactive({
   roleName: [
@@ -113,15 +107,102 @@ const rules = reactive({
   ],
 })
 
+//查询列表
+const getList = async() => {
+  let res = await getListApi(<RoleListParam>searchParam)
+  if (res && res.code == 200) {
+    // 设置表格数据
+    tableList.value = res.data.records
+    // 设置分页总条数
+    searchParam.total = res.data.total
+  }
+}
+
+//搜索
+const searchBtn = () => {
+  getList()
+}
+
+//重置
+const resetBtn = () => {
+  searchParam.roleName = ''
+  searchParam.currentPage = 1
+  getList()
+}
+
+//判断新增还是编辑的提交 0新增，1编辑
+const tags = ref('')
+
+//新增按钮
+const addBtn = () => {
+  tags.value = '0'
+  dialog.title = "新增"
+  dialog.height = 150
+  //清空编辑时留下的表单数据
+  addRef.value?.resetFields()
+  //显示弹框
+   onShow()
+}
+
 //表格编辑按钮
 const editBtn=(row:SysRole)=>{
-console.log("编辑")
+  tags.value = '1'
+  dialog.title="编辑"
+  dialog.height=180
+  //数据回显
+  nextTick(()=>{
+    addModel.roleId = row.roleId
+    addModel.roleName = row.roleName
+    addModel.remark = row.remark
+  })
+
+  //清除表单验证错误状态，使表单呈现无错误的初始状态
+  addRef.value?.resetFields()
+  //显示弹框
+  onShow()
+
 }
 
 //表格删除按钮
-const deleteBtn=(roleId:string)=>{
-  console.log("删除")
+const deleteBtn = async(roleId:string)=>{
+  const confirm = await global.$myConfirm('确定删除该数据吗？')
+  if(confirm){
+    let res = await deleteApi(roleId)
+    if(res&&res.code==200){
+      ElMessage.success(res.msg)
+    }
+    //刷新列表
+    getList()
+  }
+  
 }
+
+//表单提交，验证通过进行异步函数async,0为新增提交，1为编辑提交
+const commit = () => {
+  addRef.value?.validate(async (valid) => {
+    if (valid) {
+      console.log("表单验证通过")
+      let res = null
+      //调用接口addApi进行添加，await等待请求执行后，才接着执行代码
+      if (tags.value == '0'){
+         res = await addApi(addModel)
+      }
+      else{
+         res = await editApi(addModel)
+      }
+      //判断返回值
+      if (res && res.code == 200) {
+        ElMessage.success(res.msg);
+        //关闭弹窗
+        onClose()
+        //刷新列表
+        getList()
+
+      }
+    }
+  })
+}
+
 
 //页容量改变时触发
 const sizeChange=(size:number)=>{
@@ -133,54 +214,20 @@ const currentChange=(page:number)=>{
   searchParam.currentPage=page
   getList()
 }
-//表单提交，验证通过进行异步函数async
-const commit = () => {
-  addRef.value?.validate(async (valid) => {
-    if (valid) {
-      console.log("表单验证通过")
-      //调用接口addApi进行添加，await等待请求执行后，才接着执行代码
-      let res = await addApi(addModel)
-      if (res && res.code == 200) {
-        ElMessage.success(res.msg)
-        //关闭弹窗
-        onClose()
-      }
-    }
-  })
-}
+
+
 //表格高度
 const tableHeight = ref(0)
 const tableList = ref([])
-//查询列表
-const getList = async () => {
-  let res = await getListApi(<RoleListParam>searchParam)
-  if (res && res.code == 200) {
-    console.log(res)
-    // 设置表格数据
-    tableList.value = res.data.records
-    // 设置分页总条数
-    searchParam.total = res.data.total
-  }
-}
+
 onMounted(() => {
   //计算表格高度
   nextTick(() => {
-    tableHeight.value = window.innerHeight - 220
+    tableHeight.value = window.innerHeight - 200
   })
-  
   getList()
 })
 
-//搜索
-const searchBtn = () => {
-  getList()
-}
-//重置
-const resetBtn = () => {
-  searchParam.roleName = ''
-  searchParam.currentPage = 1
-  getList()
-}
 </script>
 
 <style scoped lang="scss"></style>

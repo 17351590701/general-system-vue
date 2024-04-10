@@ -106,7 +106,7 @@ watch(
 
 :deep(.el-tabs__item.is-active) {
   color: #fff;
-  background-color: #319874;
+  background-color: #4ac197;
   font-weight:800;
 }
 
@@ -117,7 +117,6 @@ watch(
 
 :deep(.el-tabs__item:hover) {
   color: #303133;
-  font-weight:600;
 }
 
 :deep(.el-tabs__item) {

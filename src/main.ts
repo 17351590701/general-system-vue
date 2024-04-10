@@ -12,18 +12,20 @@ import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 //引入ElementPlus的icon图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+//引入pinia
 const pinia = createPinia()
+//引入自定义全局确认框
+import myConfirm from './utils/myConfirm'
 const app = createApp(App)
-
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 //pinia数据持久化挂载
 pinia.use(piniaPluginPersistence)
-app.use(ElementPlus,{
-    locale:zhCn
-})
+app.use(ElementPlus,{locale:zhCn})
 app.use(pinia)
 app.use(router)
 
 app.mount('#app')
+//全局挂载自定义确认框
+app.config.globalProperties.$myConfirm = myConfirm

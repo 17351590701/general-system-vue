@@ -1,5 +1,5 @@
 import axios, {type AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse, type AxiosRequestConfig} from 'axios';
-import {ElMessage} from 'element-plus'
+import {ElMessage, type MessageParamsWithType} from 'element-plus'
 // axios配置
 const config = {
     baseURL: 'http://localhost:8080',
@@ -12,9 +12,8 @@ export interface Result<T = any> {
     code: number;
     message: string;
     data: T;
+    total:number
 }
-
-// noinspection Annotator,JSUnusedGlobalSymbols
 class request {
     //axios实例化
     private instance: AxiosInstance;
@@ -128,7 +127,7 @@ class request {
 
     //封装get请求
     get<T = Result>(url: string, params?: object): Promise<T> {
-        return this.instance.get(url, params)
+        return this.instance.get(url, {params})
     }
 
     //封装post请求

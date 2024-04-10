@@ -8,9 +8,11 @@ import router from './router'
 //引入Element plus和css样式
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
+//国际化
+import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 //引入ElementPlus的icon图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-const pinia =createPinia()
+const pinia = createPinia()
 const app = createApp(App)
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -18,7 +20,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 //pinia数据持久化挂载
 pinia.use(piniaPluginPersistence)
-app.use(ElementPlus)
+app.use(ElementPlus,{
+    locale:zhCn
+})
 app.use(pinia)
 app.use(router)
 

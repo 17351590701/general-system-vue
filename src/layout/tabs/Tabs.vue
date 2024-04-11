@@ -60,7 +60,6 @@ const removeTab = (targetName: string) => {
 
 //选项卡点击事件
 const clickBtn = (pane: TabsPaneContext) => {
-  console.log(pane)
   const {props} = pane
   //跳转路由
   router.push({path: props.name as string})
@@ -106,7 +105,7 @@ watch(
 
 :deep(.el-tabs__item.is-active) {
   color: #fff;
-  background-color: #4ac197;
+  background-color: #3fba8e;
   font-weight:800;
 }
 

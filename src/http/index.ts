@@ -3,7 +3,7 @@ import {ElMessage, type MessageParamsWithType} from 'element-plus'
 // axios配置
 const config = {
     baseURL: 'http://localhost:8080',
-    timeout: 5000
+    timeout: 10000
 }
 
 //定义返回值类型泛型
@@ -17,7 +17,6 @@ export interface Result<T = any> {
 class request {
     //axios实例化
     private instance: AxiosInstance;
-
     //初始化的作用
     constructor(configs: AxiosRequestConfig) {
         //实例化axios对象

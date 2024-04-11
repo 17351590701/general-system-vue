@@ -16,6 +16,7 @@ export const editApi=(param:SysRole)=>{
 export const deleteApi=(roleId:string)=>{
     return request.delete("/api/role"+"/"+roleId)
 }
-// export const deleteApi=(roleId:string)=>{
-//     return request.delete(`api/role/${roleId}`)
-// }
+//角色下拉框显示角色列表信息
+export const getSelectApi=()=>{
+    return request.get("/api/role/selectList")
+}

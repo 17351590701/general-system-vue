@@ -1,5 +1,5 @@
 <template>
-  <el-main style="padding:0;padding-left: 20px;">
+  <el-main style="padding: 0 20px;">
     <!--搜索栏 :inline=true 表单内联排列 -->
     <el-form :model="searchParam" label-width="80px" :inline="true" size="default">
       <el-form-item>
@@ -44,7 +44,6 @@
         :height="dialog.height"
         @on-close="onClose"
         @on-confirm="commit"
-        :before-close="onClose"
     >
       <!-- 插槽，向封装的弹框中添加内容,并添加表单规则 -->
       <template v-slot:content>
@@ -172,7 +171,7 @@ const deleteBtn = async(roleId:string)=>{
       ElMessage.success(res.msg)
     }
     //刷新列表
-    getList()
+    await getList()
   }
   
 }
@@ -181,7 +180,6 @@ const deleteBtn = async(roleId:string)=>{
 const commit = () => {
   addRef.value?.validate(async (valid) => {
     if (valid) {
-      console.log("表单验证通过")
       let res = null
       //调用接口addApi进行添加，await等待请求执行后，才接着执行代码
       if (tags.value == '0'){
@@ -196,7 +194,7 @@ const commit = () => {
         //关闭弹窗
         onClose()
         //刷新列表
-        getList()
+        await getList()
 
       }
     }

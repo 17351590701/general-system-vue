@@ -3,7 +3,8 @@
   :model-value="props.visible" 
   :title="props.title" 
   :width="props.width" 
-  :before-close="onOnClose"
+  :before-close="onClose"
+  :close-on-click-modal="false"
   appened-to-body
   >
     <!-- 展示弹框内容 -->

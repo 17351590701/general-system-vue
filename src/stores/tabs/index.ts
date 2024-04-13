@@ -37,7 +37,7 @@ export const useTabStore = defineStore('tabs', {
     //选项卡持久化，使页面刷新关闭时，tabList的值不会清空
     persist: {
         //存储的key
-        key:'tabs',
+        key:'tabsList',
         //存储位置
         storage:localStorage,
         //需要存储的数据

@@ -3,10 +3,10 @@
     <!-- 搜索栏 :model绑定页面到数据-->
     <el-form :model="searchParam" label-width="80px" :inline="true" size="default">
       <el-form-item>
-        <el-input v-model="searchParam.phone" placeholder="请输入手机号"></el-input>
+        <el-input v-model="searchParam.nickName" placeholder="请输入姓名"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="searchParam.nickName" placeholder="请输入姓名"></el-input>
+        <el-input v-model="searchParam.phone" placeholder="请输入手机号"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button icon="Search" @click="searchBtn">搜索</el-button>
@@ -14,7 +14,34 @@
         <el-button icon="Plus" type="primary" @click="addBtn">新增</el-button>
       </el-form-item>
     </el-form>
-
+    <!-- 表格显示数据 -->
+    <el-table :data="tableList" :height="tableHeight" border stripe>
+      <el-table-column prop="nickName" label="姓名"></el-table-column>
+      <el-table-column prop="sex" label="性别">
+      <template #default="scope">
+        <el-tag v-if="scope.row.sex=='0'" type="primary" size="default"  effect="dark" >男</el-tag>
+        <el-tag v-if="scope.row.sex=='1'" type="danger"  size="default"  effect="dark" >女</el-tag>
+      </template>
+    </el-table-column>
+    <el-table-column prop="phone" label="手机号"></el-table-column>
+    <el-table-column prop="email" label="邮箱"></el-table-column>
+    <el-table-column  label="操作">
+      <template #default="scope">
+        <el-button type="primary" size="default" icon="Edit" @click="editBtn(scope.row)">编辑</el-button>
+        <el-button type="danger"  size="default" icon="Delete" @click="deleteBtn(scope.row.userId)">删除</el-button>
+      </template>
+    </el-table-column>
+    </el-table>
+    <!-- 分页-->
+    <el-pagination
+        @size-change="sizeChange"
+        @current-change="currentChange"
+        :current-page="searchParam.currentPage"
+        :page-sizes="[10,20,30,40]"
+        :page-size="searchParam.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="searchParam.total"
+    ></el-pagination>
     <!-- 新增编辑弹框 -->
     <SysDialog 
     :title="dialog.title" 
@@ -34,8 +61,8 @@
         >
           <el-row :gutter="20">
             <el-col :span="12" :offset="0">
-              <el-form-item prop="userName" label="账户:">
-                <el-input v-model="addModel.userName"></el-input>
+              <el-form-item prop="username" label="账户:">
+                <el-input v-model="addModel.username"></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="12" :offset="0">
@@ -62,8 +89,8 @@
             <el-col :span="12" :offset="0">
               <el-form-item prop="sex" label="性别:">
                 <el-radio-group v-model="addModel.sex">
-                  <el-radio :value="0">男</el-radio>
-                  <el-radio :value="1">女</el-radio>
+                  <el-radio value="0" >男</el-radio>
+                  <el-radio value="1" >女</el-radio>
                 </el-radio-group>
               </el-form-item>
             </el-col>
@@ -89,14 +116,18 @@ import { ElMessage, type FormInstance } from 'element-plus';
 //引入多选框
 import SelectChecked from '@/components/SelectChecked.vue'
 import {getSelectApi}from '@/api/role'
-import { addApi } from '@/api/user';
-
+import {getListApi,addApi,deleteApi} from "@/api/user";
+import {type SysUser} from '@/api/user/UserModel'
+import useInstance from '@/hooks/useInstance';
+//获取全局global
+const {global} = useInstance()
 //搜索栏绑定对象
 const searchParam = reactive({
   phone: '',
   nickName: '',
   currentPage: 1,
-  pageSize: 10
+  pageSize: 10,
+  total: 0,
 })
 //角色下拉数据
 const options = ref([])
@@ -143,23 +174,25 @@ const rules = reactive({
 
 //搜索
 const searchBtn = () => {
-
+  getList()
 }
 //清空
 const resetBtn = () => {
   searchParam.phone = ''
   searchParam.nickName = ''
+  searchParam.currentPage = 1
+  getList();
 }
 //新增绑定对象
 const addModel = reactive({
   userId: '',
-  userName: '',
+  username: '',
   password: '',
   phone: '',
   email: '',
   sex: '',
   nickName: '',
-  roleId:'',
+  roleId: '',
 
 })
 //查询角色下拉数据显示
@@ -169,11 +202,11 @@ const getSelect = async()=>{
     options.value = res.data;
   }
 }
-//新增
+//新增按钮
 const addBtn = () => {
   //清空下拉选项数据
   options.value=[];
-  //重新获取下拉数据列表
+  //重新获取下拉复选框数据列表
   getSelect();
   dialog.title = "新增"
   dialog.height=210
@@ -185,8 +218,46 @@ const addBtn = () => {
   //清空表单
   addRef.value?.resetFields()
 }
+
+//表格编辑按钮
+const editBtn=(row:SysUser)=>{
+  //清空下拉数据
+  options.value=[]
+  //获取下拉数据
+  getSelect()
+  dialog.title="编辑"
+  dialog.height=180
+  console.log(addModel)
+  addModel.sex = row.sex;
+  //数据回显
+  nextTick(()=>{
+    Object.assign(addModel, row)
+  })
+
+  //清除表单验证错误状态，使表单呈现无错误的初始状态
+  addRef.value?.resetFields()
+  //显示弹框
+  onShow()
+
+}
+
+//表格删除按钮
+const deleteBtn = async(roleId:string)=>{
+  const confirm = await global.$myConfirm('确定删除该数据吗？')
+  if(confirm){
+    let res = await deleteApi(roleId)
+    if(res&&res.code==200){
+      ElMessage.success(res.msg)
+    }
+    //刷新列表
+    await getList()
+  }
+  
+}
+
 //勾选的值
 const selected = (value:Array<string|number>)=>{
+  //拼接字符串
   addModel.roleId=value.join(",")
 }
 //提交表单
@@ -199,14 +270,41 @@ const commit=()=>{
       if(res&&res.code==200){
         ElMessage.success(res.msg)
         onClose()
+        await getList()
       }
     }
   })
 }
 
+//表格数据
+const tableList=ref([])
+//查询表格数据
+const getList=async() =>{
+  let res = await getListApi(searchParam)
+  if(res&&res.code==200){
+    tableList.value = res.data.records
+    searchParam.total = res.data.total
+  }
+}
+//表格高度
+const tableHeight=ref()
+
+//页容量改变时触发
+const sizeChange=(size:number)=>{
+  searchParam.pageSize=size
+  getList()
+}
+//页数改变时触发
+const currentChange=(page:number)=>{
+  searchParam.currentPage=page
+  getList()
+}
 
 onMounted((()=>{
-  // getSelect()
+  getList()
+  nextTick(()=>{
+    tableHeight.value=window.innerHeight-200
+  })
 }))
 </script>
 

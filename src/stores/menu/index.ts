@@ -15,5 +15,13 @@ export const useMenuStore = defineStore('menuStore', {
         setCollapse(collapse: boolean) {
             this.collapse = collapse
         }
+    },
+    persist: {
+        //存储的key
+        key:'menu-collapse',
+        //存储位置
+        storage:localStorage,
+        //需要存储的数据
+        paths:['collapse']
     }
 })

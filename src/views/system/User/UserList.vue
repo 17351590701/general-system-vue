@@ -59,47 +59,58 @@
         size="default" 
         label-width="80px"
         >
-          <el-row :gutter="20">
-            <el-col :span="12" :offset="0">
-              <el-form-item prop="username" label="账户:">
-                <el-input v-model="addModel.username"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" :offset="0">
-              <el-form-item prop="password" label="密码:">
-                <el-input v-model="addModel.password"></el-input>
-              </el-form-item>
-            </el-col>
+          <el-row>
             <el-col :span="12" :offset="0">
               <el-form-item prop="nickName" label="姓名:">
                 <el-input v-model="addModel.nickName"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12" :offset="0">
-              <el-form-item prop="phone" label="手机号:">
-                <el-input v-model="addModel.phone"></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" :offset="0">
-              <el-form-item prop="roleId" label="角色:">
-                <!--复选框组件-->
-                <SelectChecked ref="selectRef" :options="options" @selected="selected"></SelectChecked>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" :offset="0">
-              <el-form-item prop="sex" label="性别:">
-                <el-radio-group v-model="addModel.sex">
-                  <el-radio value="0" >男</el-radio>
-                  <el-radio value="1" >女</el-radio>
-                </el-radio-group>
-              </el-form-item>
-            </el-col>
-            <el-col :span="12" :offset="0">
-              <el-form-item prop="email" label="邮箱:">
-                <el-input v-model="addModel.email"></el-input>
-              </el-form-item>
-            </el-col>
+          <el-col :span="12" :offset="0">
+            <el-form-item prop="sex" label="性别:">
+              <el-radio-group v-model="addModel.sex">
+                <el-radio value="0" >男</el-radio>
+                <el-radio value="1" >女</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+       </el-row>
+          <el-row>
+          <el-col :span="12" :offset="0">
+            <el-form-item prop="phone" label="手机号:">
+              <el-input v-model="addModel.phone"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :offset="0">
+            <el-form-item prop="email" label="邮箱:">
+              <el-input v-model="addModel.email"></el-input>
+            </el-form-item>
+          </el-col>
           </el-row>
+          <el-row>
+          <el-col :span="12" :offset="0">
+            <el-form-item prop="roleId" label="角色:">
+              <!--复选框组件,bindValue为查询到的用户已有的角色id-->
+              <SelectChecked :bindValue="bindValue"
+                             ref="selectRef"
+                             :options="options"
+                             @selected="selected"
+              >
+              </SelectChecked>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12" :offset="0">
+              <el-form-item prop="username" label="账户:">
+                <el-input v-model="addModel.username"></el-input>
+              </el-form-item>
+            </el-col>
+          <el-row>
+          </el-row>
+          <el-col v-if="tags=='0'" :span="12" :offset="0">
+              <el-form-item prop="password" label="密码:">
+                <el-input type="password" v-model="addModel.password"></el-input>
+              </el-form-item>
+            </el-col>
+        </el-row>
         </el-form>
       </template>
     </SysDialog>
@@ -116,7 +127,7 @@ import { ElMessage, type FormInstance } from 'element-plus';
 //引入多选框
 import SelectChecked from '@/components/SelectChecked.vue'
 import {getSelectApi}from '@/api/role'
-import {getListApi,addApi,deleteApi} from "@/api/user";
+import {getListApi,addApi,deleteApi,getRoleListApi,editApi} from "@/api/user";
 import {type SysUser} from '@/api/user/UserModel'
 import useInstance from '@/hooks/useInstance';
 //获取全局global
@@ -128,6 +139,18 @@ const searchParam = reactive({
   currentPage: 1,
   pageSize: 10,
   total: 0,
+})
+//新增绑定对象
+const addModel = reactive({
+  userId: '',
+  username: '',
+  password: '',
+  phone: '',
+  email: '',
+  sex: '',
+  nickName: '',
+  roleId: '',
+
 })
 //角色下拉数据
 const options = ref([])
@@ -165,11 +188,13 @@ const rules = reactive({
     trigger:['blur','change'],
     message:'请输入密码'
   }],
-  roleId:[{
-    required:true,
-    trigger:['blur','change'],
-    message:'请选择角色',
-  }],
+  roleId: [
+    {
+      required: true,
+      trigger: ['blur'],
+      message: '请选择角色',
+    },
+  ],
 })
 
 //搜索
@@ -183,18 +208,6 @@ const resetBtn = () => {
   searchParam.currentPage = 1
   getList();
 }
-//新增绑定对象
-const addModel = reactive({
-  userId: '',
-  username: '',
-  password: '',
-  phone: '',
-  email: '',
-  sex: '',
-  nickName: '',
-  roleId: '',
-
-})
 //查询角色下拉数据显示
 const getSelect = async()=>{
   let res = await getSelectApi();
@@ -202,15 +215,30 @@ const getSelect = async()=>{
     options.value = res.data;
   }
 }
+//用户拥有的角色id列表
+const bindValue=ref([])
+const roleIds = ref('')
+//根据用户id查询角色列表
+const getRoleList=async(userId:string)=>{
+  let res = await getRoleListApi(userId)
+  if(res&&res.code==200){
+    bindValue.value=res.data
+   roleIds.value=res.data.join(',')
+  }
+}
+//区分提交的是新增还是编辑
+const tags =ref('')
 //新增按钮
 const addBtn = () => {
-  //清空下拉选项数据
-  options.value=[];
-  //重新获取下拉复选框数据列表
-  getSelect();
+  tags.value='0'
   dialog.title = "新增"
   dialog.height=210
   onShow()
+  //清空下拉选项数据
+  options.value=[];
+  bindValue.value=[];
+  //重新获取下拉复选框数据列表
+  getSelect();
   nextTick(()=>{
     //调用复选框组件中的clear下拉清空数据
     selectRef.value.clear()
@@ -219,33 +247,37 @@ const addBtn = () => {
   addRef.value?.resetFields()
 }
 
-//表格编辑按钮
-const editBtn=(row:SysUser)=>{
-  //清空下拉数据
-  options.value=[]
-  //获取下拉数据
-  getSelect()
+//编辑按钮
+const editBtn=async(row:SysUser)=>{
+  tags.value='1'
   dialog.title="编辑"
   dialog.height=180
-  console.log(addModel)
-  addModel.sex = row.sex;
-  //数据回显
-  nextTick(()=>{
+  //清空下拉数据
+  options.value=[]
+  //查询到的角色id
+  bindValue.value=[]
+  //获取下拉数据
+  await getSelect()
+  //查询该用户角色id
+  await getRoleList(row.userId)
+  //显示弹框
+  onShow()
+  //数据回显，不能加await
+  nextTick(() => {
     Object.assign(addModel, row)
+    addModel.roleId=roleIds.value
+    addModel.password=''
   })
 
   //清除表单验证错误状态，使表单呈现无错误的初始状态
   addRef.value?.resetFields()
-  //显示弹框
-  onShow()
-
 }
 
 //表格删除按钮
-const deleteBtn = async(roleId:string)=>{
+const deleteBtn = async(userId:string)=>{
   const confirm = await global.$myConfirm('确定删除该数据吗？')
   if(confirm){
-    let res = await deleteApi(roleId)
+    let res = await deleteApi(userId)
     if(res&&res.code==200){
       ElMessage.success(res.msg)
     }
@@ -259,18 +291,23 @@ const deleteBtn = async(roleId:string)=>{
 const selected = (value:Array<string|number>)=>{
   //拼接字符串
   addModel.roleId=value.join(",")
+  console.log(addModel.roleId)
 }
 //提交表单
 const commit=()=>{
   //验证表单
   addRef.value?.validate(async(valid)=>{
     if(valid){
-      console.log('验证通过');
-      let res = await addApi(addModel)
+      let res=null
+      if(tags.value=='0'){
+        res= await addApi(addModel)
+      }else{
+        res= await editApi(addModel)
+      }
       if(res&&res.code==200){
         ElMessage.success(res.msg)
-        onClose()
         await getList()
+        onClose()
       }
     }
   })

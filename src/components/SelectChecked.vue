@@ -3,7 +3,6 @@
     <el-select 
     v-model="selectedOptions"
     multiple
-    clearable
     placeholder="请选择"
     :popper-apped-to-body="false"
     @remove-tag="removeTag"
@@ -15,8 +14,8 @@
         :label="item.label" 
         :value="item.value"
         >
-          <el-checkbox v-model="item.check" @change="isChecked(item)">.
-            {{ item.label }}
+          <el-checkbox style="width: 100%" v-model="item.check" @change="isChecked(item)">.
+            {{item.label}}
           </el-checkbox>
         </el-option>
         <div class="is-all">
@@ -27,7 +26,8 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+
+import {ref, watch} from 'vue'
 //定义下拉数据类型
 type SelectIem = {
     value: string|number,
@@ -45,6 +45,12 @@ let props = defineProps({
         type: Number,
         default() {
             return 220;
+        }
+    },
+    bindValue: {
+        type: Array<string | number>,
+        default() {
+            return [];
         }
     }
 })
@@ -105,6 +111,25 @@ const clear = () => {
 defineExpose({
   clear
 })
+watch(
+    () => props.bindValue,
+    ()=>{
+      //设置选中的值
+      selectedOptions.value=props.bindValue;
+      //设置checkbox为选中
+      props.bindValue.forEach(item=>{
+        props.options?.forEach(dom=>{
+            if(dom.value == item){
+              dom.check=true;
+            }
+        })
+      })
+    },
+    //使第一次打开编辑页面也能显示选中的值
+    {
+      immediate: true,
+    }
+)
 </script>
 <style lang="scss" scoped>
 .is-all{

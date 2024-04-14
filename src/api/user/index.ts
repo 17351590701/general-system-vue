@@ -20,3 +20,8 @@ export const editApi = (param: SysUser) => {
 export const deleteApi = (userId: string) => {
     return request.delete("/api/sysUser" + "/" + userId)
 }
+//重置密码
+export const resetPasswordApi=(param:{userId:string})=>{
+    return request.post("/api/sysUser/resetPassword",param)
+
+}

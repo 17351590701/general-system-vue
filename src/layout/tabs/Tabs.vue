@@ -121,7 +121,7 @@ watch(
 :deep(.el-tabs__item) {
   height: 30px;
   width: auto;
-  border-radius: 5px;
+  border-radius: 3px;
   font-weight: 400;
   font-family: 'HarmonyOS_Sans_SC',sans-serif;
 }

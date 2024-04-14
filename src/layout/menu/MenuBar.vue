@@ -53,16 +53,6 @@ const menuList = reactive([
     },
     children: [
       {
-        path: '/userList',
-        name: 'userList',
-        component: "/system/UserList",
-        meta: {
-          title: '用户管理',
-          icon: "UserFilled",
-          roles: ["sys:user"]
-        },
-      },
-      {
         path: '/roleList',
         name: 'roleList',
         component: "/system/Role/RoleList",
@@ -70,6 +60,16 @@ const menuList = reactive([
           title: '角色管理',
           icon: 'User',
           roles: ['sys:role']
+        },
+      },
+      {
+        path: '/userList',
+        name: 'userList',
+        component: "/system/UserList",
+        meta: {
+          title: '用户管理',
+          icon: "UserFilled",
+          roles: ["sys:user"]
         },
       },
       {

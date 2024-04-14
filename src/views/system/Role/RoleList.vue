@@ -2,7 +2,7 @@
   <el-main style="padding: 0 20px;">
     <!--搜索栏 :inline=true 表单内联排列 -->
     <el-form :model="searchParam" label-width="80px" :inline="true" size="default">
-      <el-form-item>
+      <el-form-item style="height: 50px" >
         <el-input v-model="searchParam.roleName" palceholder="请输入关键字"></el-input>
       </el-form-item>
       <el-form-item>

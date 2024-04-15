@@ -100,7 +100,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" :offset="0">
-              <el-form-item prop="username" label="账户:">
+              <el-form-item prop="username" label="用户名:">
                 <el-input v-model="addModel.username"></el-input>
               </el-form-item>
             </el-col>

@@ -6,9 +6,17 @@ export const getParentMenuApi = () => {
 }
 //新增
 export const addMenuApi=(param:SysMenu)=>{
-  return request.post("api/sysMenu",param)
+  return request.post("/api/sysMenu",param)
 }
 //列表
 export const getListApi=()=>{
-  return request.get("api/sysMenu/getList")
+  return request.get("/api/sysMenu/getList")
+}
+//编辑
+export const editApi=(param:SysMenu)=>{
+  return request.put("/api/sysMenu",param)
+}
+//删除
+export const deleteApi=(menuId:string)=>{
+  return request.delete("/api/sysMenu"+"/"+menuId)
 }

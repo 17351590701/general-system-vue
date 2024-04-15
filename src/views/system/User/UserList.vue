@@ -23,7 +23,7 @@
         <el-tag v-if="scope.row.sex=='1'" type="danger"  size="default"  effect="dark" >女</el-tag>
       </template>
     </el-table-column>
-    <el-table-column prop="phone" label="手机号"></el-table-column>
+    <el-table-column prop="phone" label="手机号" ></el-table-column>
     <el-table-column prop="email" label="邮箱"></el-table-column>
     <el-table-column  align="center" width="320" label="操作">
       <template #default="scope">

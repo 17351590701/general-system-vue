@@ -1,15 +1,9 @@
 <template>
+  <!-- 新增按钮 -->
   <el-main style="padding: 0 20px;">
     <el-button type="primary" icon="Plus" size="default" @click="addBtn">新增</el-button>
     <!-- 竖形表格 -->
-    <el-table 
-    style="margin-top: 20px;"
-    :data="tableList" 
-    row-key="menuId" 
-    default-expand-all 
-    border 
-    stripe
-    >
+    <el-table style="margin-top: 20px;" :data="tableList" row-key="menuId" default-expand-all border stripe>
       <el-table-column label="菜单名称" prop="title" width="200px"></el-table-column>
       <el-table-column label="菜单图标" prop="icon" width="100px" align="center">
         <template #default="scope">
@@ -26,7 +20,7 @@
         </template>
       </el-table-column>
       <el-table-column label="上级菜单" prop="parentId" width="100px" align="center"></el-table-column>
-      <el-table-column label="路由名称" prop="name"  align="center"></el-table-column>
+      <el-table-column label="路由名称" prop="name" align="center"></el-table-column>
       <el-table-column label="路由地址" prop="path" align="center"></el-table-column>
       <el-table-column label="组件路径" prop="url" width="320px" align="center"></el-table-column>
       <el-table-column label="序号" prop="orderNum" align="center"></el-table-column>
@@ -109,10 +103,13 @@
 <script setup lang="ts">
 import SysDialog from '@/components/SysDialog.vue';
 import useDialog from '@/hooks/useDialog'
-import { getParentMenuApi, addMenuApi, getListApi } from '@/api/menu'
+import { getParentMenuApi, addMenuApi, getListApi, editApi, deleteApi } from '@/api/menu'
 import { ElMessage, type FormInstance } from 'element-plus';
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, nextTick } from 'vue';
 import { type SysMenu } from '@/api/menu/MenuModel';
+import useInstance from '@/hooks/useInstance';
+//获取全局global
+const { global } = useInstance()
 //弹框属性
 const { dialog, onShow, onClose } = useDialog()
 //表单ref属性
@@ -194,31 +191,68 @@ const rules = reactive({
   }],
 
 })
+//区分新增和编辑
+const tags = ref('')
 //新增按钮
 const addBtn = () => {
+  tags.value = '0'
+  dialog.title = "新增"
   //获取上级菜单
   getParent()
   //显示弹框
   onShow();
+  //清空表单
+  addRef.value?.resetFields();
 
 }
 //编辑按钮
-const editBtn = (row: SysMenu) => {
- 
+const editBtn = async (row: SysMenu) => {
+  tags.value = '1'
+  dialog.title = "编辑"
+  //获取上级菜单
+  await getParent();
+  //显示弹框
+  onShow();
+  //数据回写
+  nextTick(() => {
+    //将row的值复制到addModel中
+    Object.assign(addModel, row)
+  })
+  //清空表单
+  addRef.value?.resetFields()
+
 }
 //删除按钮
-const deleteBtn = (menuId: string) => {
-
+const deleteBtn = async (menuId: string) => {
+  const confirm = await global.$myConfirm('确定删除该数据吗')
+  if (confirm) {
+    let res = await deleteApi(menuId)
+    if (res && res.code == 200) {
+      ElMessage.success(res.msg)
+      //刷新列表
+      getList();
+      onClose();
+    }
+  }
 }
 //表单提交
 const commit = () => {
   addRef.value?.validate(async (valid) => {
     if (valid) {
       console.log("验证通过")
-      let res = await addMenuApi(addModel)
+      let res = null;
+      if (tags.value == '0') {
+        console.log("进入新增")
+        res = await addMenuApi(addModel)
+      } else {
+        console.log("进入编辑")
+        res = await editApi(addModel)
+      }
       if (res && res.code == 200) {
         ElMessage.success(res.msg)
         addRef.value?.resetFields()
+        //刷新列表
+        getList();
         onClose();
       }
     }

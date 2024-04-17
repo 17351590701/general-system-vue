@@ -24,7 +24,7 @@
                 <el-input v-model="loginModel.code" placeholder="请输入验证码"></el-input>
               </el-col>
               <el-col :span="8" :offset="0">
-                验证码
+                <img :src="imageSrc" alt="验证码" >
               </el-col>
             </el-row>
           </el-form-item>
@@ -38,8 +38,9 @@
   </div>
 </template>
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
+import {reactive, ref,onMounted} from 'vue'
 import {type FormInstance} from 'element-plus';
+import {getImgApi} from '@/api/user';
 //表单ref属性，用于表单验证
 const form = ref<FormInstance>()
 //表单绑定对象
@@ -55,12 +56,6 @@ const rules = {
       required: true,
       message: '请输入用户名',
       trigger: 'blur'
-    },
-    {
-      min: 3,
-      max: 5,
-      message: '长度在 3 到 5 个字符',
-      trigger: 'blur'
     }
   ],
   password: [
@@ -68,16 +63,11 @@ const rules = {
       required: true,
       message: '请输入密码',
       trigger: 'blur'
-    },
-    {
-      min: 6,
-      max: 10,
-      message: '长度在 6 到 10 个字符',
-      trigger: 'blur'
     }
   ],
 
 }
+
 //登录
 const login = () => {
   console.log("登录")
@@ -87,6 +77,20 @@ const toRegister = () => {
   console.log("前往注册")
 }
 
+//验证码src
+const imageSrc = ref('')
+const getImg=async()=>{
+  let res = await getImgApi();
+  if(res&&res.code==200){
+    imageSrc.value="data:image/png;base64,"+res.data;
+    console.log(imageSrc.value);
+    
+  }
+}
+
+onMounted(()=>{
+  getImg();
+})
 </script>
 
 <style scoped lang="scss">
@@ -139,9 +143,9 @@ const toRegister = () => {
   border: 0;
   font-style: italic
 }
-
 .toRegister:hover {
-  color: #ffb74b;
+  color: #78cbea;
+  cursor: pointer;
 }
 
 </style>

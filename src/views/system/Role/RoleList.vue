@@ -16,10 +16,11 @@
     <el-table :data="tableList" :height="tableHeight" border stripe>
       <el-table-column prop="roleName" label= "角色名称"></el-table-column>
       <el-table-column prop="remark" label="备注"></el-table-column>
-      <el-table-column label="操作" width="220" align="center">
+      <el-table-column label="操作" width="320" align="center">
         <!-- 插槽,接受本行数据 -->
         <template #default="scope" >
           <el-button type="primary" icon="Edit" size="default" @click="editBtn(scope.row)">编辑</el-button>
+          <el-button type="success" icon="Edit" size="default" @click="assignBtn(scope.row)">分配菜单</el-button>
         <el-button type="danger" icon="Delete" size="default" @click="deleteBtn(scope.row.roleId)">删除</el-button>
         </template>
         </el-table-column>
@@ -64,6 +65,9 @@
         </el-form>
       </template>
     </SysDialog>
+
+    <!--分配菜单-->
+  <AssignTree ref="assignTree"></AssignTree>
   </el-main>
 </template>
 
@@ -76,10 +80,13 @@ import {addApi, getListApi,editApi,deleteApi} from '@/api/role'
 import type {RoleListParam} from "@/api/role/RoleModel";
 import {type SysRole} from '@/api/role/RoleModel';
 import useInstance from '@/hooks/useInstance';
+import AssignTree from "@/views/system/Role/AssignTree.vue";
 //获取全局global
 const {global} = useInstance()
 //表单Ref属性
 const addRef = ref<FormInstance>()
+//菜单树的Ref属性
+const assignTree=ref()
 //弹框属性
 const {dialog, onClose, onShow} = useDialog()
 //新增表单对象
@@ -154,12 +161,10 @@ const editBtn=(row:SysRole)=>{
     addModel.roleName = row.roleName
     addModel.remark = row.remark
   })
-
   //清除表单验证错误状态，使表单呈现无错误的初始状态
   addRef.value?.resetFields()
   //显示弹框
   onShow()
-
 }
 
 //表格删除按钮
@@ -201,6 +206,10 @@ const commit = () => {
   })
 }
 
+//分配菜单按钮
+const assignBtn=(row:SysRole)=>{
+  assignTree.value.show(row.roleId,row.roleName)
+}
 
 //页容量改变时触发
 const sizeChange=(size:number)=>{

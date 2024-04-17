@@ -1,5 +1,5 @@
 import request from '@/http'
-import type { Login, SysUser, UserListParam } from './UserModel'
+import type { Login, SysUser, UserListParam ,AssignParam} from './UserModel'
 //新增
 export const addApi = (param: SysUser) => {
     return request.post("/api/sysUser", param)
@@ -27,4 +27,8 @@ export const resetPasswordApi = (param: { userId: string }) => {
 //登录
 export const loginApi = (param:Login) => {
     return request.post("/api/sysUser/login", param)
+}
+//查询菜单树
+export const getAssignTreeApi = (param:AssignParam) => {
+    return request.get("/api/sysUser/getAssingTree",param)
 }

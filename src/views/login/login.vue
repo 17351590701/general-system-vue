@@ -49,7 +49,7 @@ const loginModel = reactive({
   code: '',
 })
 //获取用户信息
-const userSotre = useUserStore()
+const userStore = useUserStore()
 const router = useRouter()
 //表单验证规则
 const rules = {
@@ -84,10 +84,10 @@ const login = () => {
       res=await loginApi(loginModel)
       if(res&&res.code==200){
         //存储用户信息，跳转首页
-        userSotre.setUserId(res.data.UserId)
-        userSotre.setNickName(res.data.nickName)
+        userStore.setUserId(res.data.userId)
+        userStore.setNickName(res.data.nickName)
         //跳转至首页
-        router.push('/')
+        await router.push('/')
       }
     } else {
       console.log("登录失败")
@@ -105,7 +105,8 @@ const imageUrl = ref("http://localhost:8080/api/sysUser/getImage")
 //刷新验证码
 const refreshCode = () => {
   const date = new Date().getTime();
-  imageUrl.value = `http://localhost:8080/api/sysUser/getImage?time=` + date;
+  imageUrl.value = `http://localhost:8080/api/sysUser/getImage?time=${date}`;
+
 }
 
 </script>

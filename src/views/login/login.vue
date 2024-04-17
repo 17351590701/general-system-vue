@@ -5,29 +5,26 @@
         LOGIN
       </div>
       <div class="content">
-        <el-form
-            :model="loginModel"
-            ref="form"
-            :rules="rules"
-            style="margin-left: 60px">
-          <el-form-item>
-            <el-input v-model="loginModel.username" prefix-icon="user"
-                      placeholder="请输入用户名"></el-input>
+        <el-form :model="loginModel" 
+        ref="form" 
+        :rules="rules" 
+        style="margin-left: 60px"
+
+        >
+          <el-form-item prop="username">
+            <el-input v-model="loginModel.username" prefix-icon="user" placeholder="请输入用户名"
+              style="width: 95%;"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-input v-model="loginModel.password" show-password prefix-icon="lock"
-                      placeholder="请输入密码"></el-input>
+          <el-form-item prop="password">
+            <el-input v-model="loginModel.password" show-password prefix-icon="lock" placeholder="请输入密码"
+              style="width: 95%;"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-row :gutter="10">
-              <el-col :span="16" :offset="0">
-                <el-input v-model="loginModel.code" placeholder="请输入验证码"></el-input>
-              </el-col>
-              <el-col :span="8" :offset="0">
-                <img :src="imageSrc" alt="验证码" >
-              </el-col>
-            </el-row>
+
+          <el-form-item prop="code">
+            <el-input v-model="loginModel.code" placeholder="请输入验证码" style="width: 70%;"></el-input>
+            <img :src="imageUrl" alt="验证码" style="width: 50px;height: 30px;margin-left: 15px;" @click="refreshCode">
           </el-form-item>
+
           <el-form-item>
             <el-button @click="login" style="width: 65%;" type="primary">登录</el-button>
             <span><a class="toRegister" @click="toRegister">前往注册</a></span>
@@ -38,9 +35,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import {reactive, ref,onMounted} from 'vue'
-import {type FormInstance} from 'element-plus';
-import {getImgApi} from '@/api/user';
+import { reactive, ref, onMounted } from 'vue'
+import { type FormInstance } from 'element-plus';
+import { loginApi} from '@/api/user'
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 //表单ref属性，用于表单验证
 const form = ref<FormInstance>()
 //表单绑定对象
@@ -49,6 +48,9 @@ const loginModel = reactive({
   password: '',
   code: '',
 })
+//获取用户信息
+const userSotre = useUserStore()
+const router = useRouter()
 //表单验证规则
 const rules = {
   username: [
@@ -65,32 +67,47 @@ const rules = {
       trigger: 'blur'
     }
   ],
-
+  code: [
+    {
+      required: true,
+      message: '请输入验证码',
+      trigger: 'blur'
+    }
+  ],
 }
 
 //登录
 const login = () => {
-  console.log("登录")
+  form.value?.validate(async(valid) => {
+    let res =null;
+    if (valid) {
+      res=await loginApi(loginModel)
+      if(res&&res.code==200){
+        //存储用户信息，跳转首页
+        userSotre.setUserId(res.data.UserId)
+        userSotre.setNickName(res.data.nickName)
+        //跳转至首页
+        router.push('/')
+      }
+    } else {
+      console.log("登录失败")
+    }
+  })
 }
 //注册
 const toRegister = () => {
   console.log("前往注册")
 }
 
-//验证码src
-const imageSrc = ref('')
-const getImg=async()=>{
-  let res = await getImgApi();
-  if(res&&res.code==200){
-    imageSrc.value="data:image/png;base64,"+res.data;
-    console.log(imageSrc.value);
-    
-  }
+
+//验证码图片地址
+const imageUrl = ref("http://localhost:8080/api/sysUser/getImage")
+//刷新验证码
+const refreshCode = () => {
+  const date = new Date().getTime();
+  imageUrl.value = `http://localhost:8080/api/sysUser/getImage?time=` + date;
 }
 
-onMounted(()=>{
-  getImg();
-})
 </script>
 
 <style scoped lang="scss">
@@ -105,6 +122,7 @@ onMounted(()=>{
   display: flex;
   align-items: center;
   justify-content: center;
+
   .login {
     width: 600px;
     height: 350px;
@@ -115,6 +133,7 @@ onMounted(()=>{
     display: flex;
     align-items: center;
     justify-content: center;
+
     .logo {
       width: 30%;
       font-size: 40px;
@@ -123,6 +142,7 @@ onMounted(()=>{
       color: rgba(255, 255, 255, 0.9);
       font-family: Helvetica, Arial, sans-serif
     }
+
     .content {
       margin-top: 25px;
       text-align: center;
@@ -143,9 +163,9 @@ onMounted(()=>{
   border: 0;
   font-style: italic
 }
+
 .toRegister:hover {
   color: #78cbea;
   cursor: pointer;
 }
-
 </style>

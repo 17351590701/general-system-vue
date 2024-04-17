@@ -1,5 +1,5 @@
 import request from '@/http'
-import type { SysUser, UserListParam } from './UserModel'
+import type { Login, SysUser, UserListParam } from './UserModel'
 //新增
 export const addApi = (param: SysUser) => {
     return request.post("/api/sysUser", param)
@@ -23,9 +23,8 @@ export const deleteApi = (userId: string) => {
 //重置密码
 export const resetPasswordApi = (param: { userId: string }) => {
     return request.post("/api/sysUser/resetPassword", param)
-
 }
-//获取后端生成验证码
-export const getImgApi = () => {
-    return request.post("/api/sysUser/getImage")
+//登录
+export const loginApi = (param:Login) => {
+    return request.post("/api/sysUser/login", param)
 }

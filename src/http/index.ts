@@ -3,7 +3,8 @@ import {ElMessage, type MessageParamsWithType} from 'element-plus'
 // axios配置
 const config = {
     baseURL: 'http://localhost:8080',
-    timeout: 10000
+    timeout: 10000,
+    withCredentids:true
 }
 
 //定义返回值类型泛型

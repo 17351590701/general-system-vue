@@ -4,7 +4,7 @@
     <el-button type="primary" icon="Plus" size="default" @click="addBtn">新增</el-button>
     <!-- 竖形表格 -->
     <el-table style="margin-top: 20px;" :data="tableList" row-key="menuId" default-expand-all border stripe>
-      <el-table-column label="菜单名称" prop="title" width="200px"></el-table-column>
+      <el-table-column label="菜单名称" prop="title" width="180px"></el-table-column>
       <el-table-column label="菜单图标" prop="icon" width="100px" align="center">
         <template #default="scope">
           <el-icon v-if="scope.row.icon">
@@ -22,7 +22,7 @@
       <el-table-column label="上级菜单" prop="parentId" width="100px" align="center"></el-table-column>
       <el-table-column label="路由名称" prop="name" align="center"></el-table-column>
       <el-table-column label="路由地址" prop="path" align="center"></el-table-column>
-      <el-table-column label="组件路径" prop="url" width="320px" align="center"></el-table-column>
+      <el-table-column label="组件路径" prop="url" width="270px" align="center"></el-table-column>
       <el-table-column label="序号" prop="orderNum" align="center"></el-table-column>
       <el-table-column label="操作" prop="" align="center" width="220">
         <template #default="scope">

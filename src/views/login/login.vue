@@ -86,6 +86,7 @@ const login = () => {
         //存储用户信息，跳转首页
         userStore.setUserId(res.data.userId)
         userStore.setNickName(res.data.nickName)
+        userStore.setToken(res.data.token)
         //跳转至首页
         await router.push('/')
       }

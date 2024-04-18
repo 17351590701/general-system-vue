@@ -55,7 +55,7 @@ import CloseTabs from "@/layout/tabs/CloseTabs.vue";
   }
 
   .header {
-    background-color: #009688;
+    background-color: #32a59a;
     display: flex;
     align-items: center;
     box-shadow: rgba(0, 0, 0, 0.24) 0 2px 5px;

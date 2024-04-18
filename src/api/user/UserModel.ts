@@ -28,3 +28,9 @@ export type AssignParam={
     roleId:string,
     userId:string,
 }
+//修改密码参数
+export type UpdateParam={
+    userId:string,
+    oldPassword:string,
+    newPassword:string
+}

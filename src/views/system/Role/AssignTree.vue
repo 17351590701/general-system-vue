@@ -50,21 +50,21 @@ const params = reactive({
   userId: '',
   roleId: ''
 })
-//选中的菜单回显
+//选中的菜单回显，思想为检查树的叶子结点，而非树枝结点
 const checked = (id: number, data: any, newArr: any) => {
   data.forEach((item: any) => {
-    //如果id等于menuId，子菜单树为0，直接添加
     if(item.menuId==id){
       if(item.children&&item.children.length==0){
         newArr.push(item.menuId)
       }
-    } else{ //递归调用
+    } else{
       if(item.children&&item.children.lenght!=0){
         checked(id,item.children,newArr)
       }
     }
   })
 }
+
 
 
 //查询获取菜单树

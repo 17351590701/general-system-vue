@@ -87,7 +87,7 @@ tabStore.tabList.splice(1,tabStore.tabList.length-1)
   width: 60px;
   height: 30px;
   position: fixed;
-  top: 55px;
+  top: 60px;
   right: 0;
   z-index: 999;
   display: flex;

@@ -139,7 +139,6 @@ const getParent = async () => {
 }
 //上级菜单选中事件
 const treeClick = (item: any) => {
-  console.log(item)
   addModel.parentName = item.title
 }
 //表单验证规则

@@ -5,27 +5,40 @@
       :width="dialog.width"
       :height="dialog.height"
       @on-close="onClose"
-      @on-confirm="onConfirm"
+      @on-confirm="commit"
   >
     <template v-slot:content>
-      <el-tree :data="assignTreeData.list" :props="defaultProps"></el-tree>
+      <el-tree
+          ref="treeRef"
+          :data="assignTreeData.list"
+          :props="defaultProps"
+          node-key="menuId"
+          show-checkbox
+          default-expand-all
+          :default-checked-keys="assignTreeData.assignTreeChecked"
+      >
+      </el-tree>
     </template>
   </SysDialog>
 </template>
 
 <script setup lang="ts">
 import {getAssignTreeApi} from '@/api/user'
-import {reactive} from "vue";
+import {saveRoleMenuApi} from '@/api/role'
+import {reactive, ref} from "vue";
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from '@/hooks/useDialog'
 import {useUserStore} from "@/stores/user";
+import {ElMessage, ElTree} from "element-plus";
 
-const {dialog, onShow, onClose, onConfirm} = useDialog();
+const {dialog, onShow, onClose} = useDialog();
 const userStore = useUserStore();
+
+const treeRef = ref<InstanceType<typeof ElTree>>()
 //树的属性配置
 const defaultProps = {
+  label: 'title',
   children: 'children',
-  label: 'title'
 }
 //树数据
 const assignTreeData = reactive({
@@ -37,17 +50,58 @@ const params = reactive({
   userId: '',
   roleId: ''
 })
-//查询菜单树
+//选中的菜单回显
+const checked = (id: number, data: any, newArr: any) => {
+  data.forEach((item: any) => {
+    //如果id等于menuId，子菜单树为0，直接添加
+    if(item.menuId==id){
+      if(item.children&&item.children.length==0){
+        newArr.push(item.menuId)
+      }
+    } else{ //递归调用
+      if(item.children&&item.children.lenght!=0){
+        checked(id,item.children,newArr)
+      }
+    }
+  })
+}
+
+
+//查询获取菜单树
 const getAssignTree = async () => {
   let res = await getAssignTreeApi(params)
+
   if (res && res.code == 200) {
-    console.log(res.data)
-    assignTreeData.list = res.data.list
-    assignTreeData.assignTreeChecked = res.data.assignTreeChecked
+    assignTreeData.list = res.data.menuList
+    assignTreeData.assignTreeChecked = res.data.checkList
+    console.log(assignTreeData.assignTreeChecked)
+    console.log(assignTreeData.list)
+    //数据回显，判断角色原来是否已经分配过权限，如果有，回显
+    if (assignTreeData.assignTreeChecked.length > 0) {
+      let newArr: any = [];
+      //遍历已分配的菜单
+      assignTreeData.assignTreeChecked.forEach(item =>
+          checked(item, assignTreeData.list, newArr)
+      );
+      assignTreeData.assignTreeChecked = newArr;
+    }
   }
 }
+
+//提交数据
+const commitParam = reactive({
+  roleId: '',
+  list: [] as string[]
+})
+
 //弹框显示
 const show = async (roleId: string, name: string) => {
+  commitParam.roleId = roleId
+  //清空数据
+  assignTreeData.assignTreeChecked = []
+  assignTreeData.list = []
+  commitParam.list = []
+
   params.roleId = roleId
   params.userId = userStore.getUserId
   //设置弹框属性
@@ -62,6 +116,26 @@ const show = async (roleId: string, name: string) => {
 defineExpose({
   show
 })
+
+//提交表单
+const commit = async () => {
+  //获取选择的菜单数据
+  const checkIds = treeRef.value?.getCheckedKeys() as string[];
+  const halfCheckIds = treeRef.value?.getHalfCheckedKeys() as string[];
+  let ids = checkIds?.concat(halfCheckIds);
+  //设置选中的节点
+  commitParam.list = ids
+  //判断是否已经选择菜单
+  if (ids.length == 0) {
+    ElMessage.warning("请选择菜单")
+  } else {
+    let res = await saveRoleMenuApi(commitParam)
+    if (res && res.code == 200) {
+      ElMessage.success(res.msg)
+      onClose();
+    }
+  }
+}
 </script>
 
 <style scoped lang="scss">

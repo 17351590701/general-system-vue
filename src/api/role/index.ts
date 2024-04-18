@@ -1,5 +1,5 @@
 import request from '@/http'
-import type {RoleListParam, SysRole} from './RoleModel'
+import type {RoleListParam, SysRole,SaveMenuParam} from './RoleModel'
 //新增角色
 export const addApi=(param:SysRole)=>{
     return request.post("/api/role",param)
@@ -19,4 +19,8 @@ export const deleteApi=(roleId:string)=>{
 //角色下拉框显示角色列表信息
 export const getSelectApi=()=>{
     return request.get("/api/role/selectList")
+}
+//分配菜单保存
+export const saveRoleMenuApi=(param:SaveMenuParam)=>{
+    return request.post("/api/role/saveRoleMenu",param)
 }

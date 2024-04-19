@@ -8,15 +8,15 @@
     </div>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item v-if="userStore.getUserId==''" @click="toLogin">前往登录</el-dropdown-item>
+        <el-dropdown-item v-if="userStore.getUserId == ''" @click="toLogin">前往登录</el-dropdown-item>
         <el-dropdown-item @click="updateBtn">修改密码</el-dropdown-item>
-        <el-dropdown-item v-if="userStore.getUserId!=''" @click="loginOut">退出登录</el-dropdown-item>
+        <el-dropdown-item v-if="userStore.getUserId != ''" @click="loginOut">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
   <!-- 修改密码 -->
   <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
-             @on-close="onClose" @on-confirm="commit">
+    @on-close="onClose" @on-confirm="commit">
     <template v-slot:content>
       <el-form :model="upModel" ref="formRef" :rules="rules" label-width="80px" :inline="false" size="default">
         <el-form-item label="原密码" prop="oldPassword">
@@ -36,20 +36,20 @@
 <script setup lang="ts">
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
-import {ElMessage, type FormInstance} from "element-plus";
-import {ref, reactive} from "vue";
-import {updatePasswordApi} from "@/api/user";
-import {useRouter} from "vue-router";
-import {useUserStore} from "@/stores/user";
+import { ElMessage, type FormInstance } from "element-plus";
+import { ref, reactive } from "vue";
+import { updatePasswordApi } from "@/api/user";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
 import useInstance from '@/hooks/useInstance';
 
 //获取全局global
-const {global} = useInstance()
+const { global } = useInstance()
 
 //为userId获取
 const userStore = useUserStore();
 //弹框属性
-const {dialog, onClose, onShow} = useDialog();
+const { dialog, onClose, onShow } = useDialog();
 //表单Ref属性
 const formRef = ref<FormInstance>()
 //路由
@@ -107,7 +107,7 @@ function commit() {
             //清空缓存useStore
             // localStorage.clear()
             //跳转登录
-            await router.push({path: '/login'})
+            await router.push({ path: '/login' })
           }
         }
 
@@ -116,7 +116,7 @@ function commit() {
   })
 }
 
-//跳转登录
+//前往登录
 function toLogin() {
   router.push({
     path: '/login'
@@ -130,9 +130,9 @@ async function loginOut() {
   if (confirm) {
     //清空缓存
     localStorage.clear()
-    await router.push({
-      path: '/login'
-    })
+    //不通过路由跳转
+    window.location.href = '/login'
+
   }
 
 }

@@ -1,47 +1,49 @@
 import router from "@/router"
 import { useUserStore } from "@/stores/user";
 import { useMenuStore } from "@/stores/menu";
-//定义白名单：不需要验证
+// 定义不需要验证的路径白名单
 const whiteList = ['/login']
-//路由前置守卫
+
+// 路由全局前置守卫
 router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
     const menuStore = useMenuStore()
 
-    //获取token
+    // 尝试获取用户token
     const token = userStore.getToken
-    //判断token是否存在
+    // 检查token是否存在
     if (token) {
-        //是否从登录或首页来的，是：放行，否：从服务器获取菜单数据
+        // 判断用户是从登录页或首页跳转过来，若是则直接放行，否则需获取菜单数据
         if (to.path === '/login' || to.path === '/') {
             next({ path: '/' })
         } else {
-            //判断权限数据是否存在
+            // 检查用户权限数据是否已存在
             const hasRoles = userStore.getCodeList.length > 0
             if (hasRoles) {
+                // 权限数据存在，直接进入
                 next()
-            } else {  //不存在
+            } else {
                 try {
-                    //获取用户信息
+                    // 权限数据不存在时，尝试从服务器获取用户信息和菜单数据
                     await userStore.getInfo();
-                    //获取菜单数据
                     await menuStore.getMenuList(router, userStore.getUserId);
-                    //==等待路由完全挂载==
+                    //等待路由完全加载
                     next({ ...to, replace: true })
                 } catch (error) {
                     //清空数据
-                    // localStorage.clear();
-                    //跳转登录
+                    localStorage.clear();
+                    // 获取数据失败，跳转至登录页
                     next({path:'/login'})
                 }
             }
         }
     } else {
+        // 无token时，检查路径是否在白名单内
         if (whiteList.indexOf(to.path) !== -1) {
-            //在白名单中
+            // 在白名单内，直接进入
             next();
         } else {
-            //不在白名单，跳转登录
+            // 不在白名单内，跳转至登录页
             next({ path: '/login' })
         }
     }

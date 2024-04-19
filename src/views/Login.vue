@@ -97,7 +97,7 @@ const login = () => {
 }
 //注册
 const toRegister = () => {
-  console.log("前往注册")
+  router.push('/register')
 }
 
 

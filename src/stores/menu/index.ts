@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { getMenuListApi } from '@/api/menu'
 import type { RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/Index.vue'
-import Center from '@/layout/center/center.vue'
 
 //获取views下的所有vue文件
 const modules = import.meta.glob('../../views/**/*.vue')
@@ -56,6 +55,7 @@ export const useMenuStore = defineStore('menuStore', {
                 })
             })
         },
+        
         persist: {
             //存储的key
             key: 'menu',

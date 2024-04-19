@@ -4,11 +4,6 @@ import Layout from '@/layout/Index.vue'
 //动态生成路由
 export const constantRoutes: Array<RouteRecordRaw> = [
     {
-        path: '/login',
-        name: 'login',
-        component: () => import('@/views/login/login.vue')
-    },
-    {
         path: '/',
         component: Layout,
         redirect: '/dashboard',
@@ -24,6 +19,12 @@ export const constantRoutes: Array<RouteRecordRaw> = [
             }
         ]
     },
+    {
+        path: '/login',
+        name: 'login',
+        component: () => import('@/views/Login.vue')
+    },
+
 ]
 
 //静态路由
@@ -31,7 +32,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
 //     {
 //         path: '/login',
 //         name: 'login',
-//         component: () => import('@/views/login/login.vue')
+//         component: () => import('@/views/login/Login.vue')
 //     },
 //     {
 //         path: '/',

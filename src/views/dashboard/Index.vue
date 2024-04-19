@@ -1,5 +1,5 @@
 <template>
-      <!-- 弹框的使用 -->
+       <button @click="console.log(menuStore.getMenu)">查看路由菜单</button>
   <div>
     <el-button type="primary" size="default" @click="addBtn()">新增</el-button>
     <!-- 向弹框传递props参数-->
@@ -24,8 +24,10 @@
 <script setup lang="ts">
 import SysDialog from '@/components/SysDialog.vue';
 import useDialog from '@/hooks/useDialog';
+import { useMenuStore } from '@/stores/menu';
 //弹框属性
 const {dialog,onClose,onConfirm,onShow} =useDialog()
+const menuStore = useMenuStore()
 
 const addBtn=()=>{
   dialog.title="新增"

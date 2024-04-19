@@ -25,6 +25,7 @@
     </el-table-column>
     <el-table-column prop="phone" label="手机号" ></el-table-column>
     <el-table-column prop="email" label="邮箱"></el-table-column>
+    <el-table-column prop="username" label="账户"></el-table-column>
     <el-table-column  align="center" width="320" label="操作">
       <template #default="scope">
         <el-button type="primary" size="default" icon="Edit" @click="editBtn(scope.row)">编辑</el-button>

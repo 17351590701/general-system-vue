@@ -33,6 +33,8 @@ const route = useRoute()
 const router = useRouter()
 //删除tab
 const removeTab = (targetName: string) => {
+  //首页不能关闭
+  if(targetName==='/dashboard') return;
   //Tab类型数组
   const tabs = tabsList.value
   //激活选项卡名
@@ -98,7 +100,7 @@ watch(
 <style scoped lang="scss">
 .demo-tabs {
   margin-top: 5px;
-  margin-left: 3px;
+  margin-left: 10px;
   width: auto;
   height: auto;
 }

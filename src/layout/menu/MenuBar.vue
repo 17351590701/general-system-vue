@@ -1,29 +1,24 @@
 <template>
   <!--logo-->
-  <MenuLogo/>
+  <MenuLogo />
   <!--配置router属性，将会以：index中的menu.path进行跳转 -->
-  <el-menu
-      :default-active="defaultActive"
-      class="el-menu-vertical-demo"
-      :collapse="isCollapse"
-      background-color="#2e4057"
-      router
-  >
-    <MenuItem :menuList="menuList"/>
+  <el-menu :default-active="defaultActive" class="el-menu-vertical-demo" :collapse="isCollapse"
+    background-color="#2e4057" router>
+    <MenuItem :menuList="menuList" />
   </el-menu>
 </template>
 <script setup lang="ts">
-import {computed, reactive} from 'vue'
+import { computed, onMounted, reactive } from 'vue'
 import MenuItem from "./MenuItem.vue";
 import MenuLogo from "./menuLogo.vue";
-import {useRoute} from "vue-router";
-import {useMenuStore} from "@/stores/menu";
+import { useRoute } from "vue-router";
+import { useMenuStore } from "@/stores/menu";
 
 const route = useRoute();
 // 当前激活的菜案
 const defaultActive = computed(() => {
   // 获取路由中的path属性返回
-  const {path} = route
+  const { path } = route
   return path
 })
 
@@ -31,92 +26,11 @@ const menuStore = useMenuStore();
 const isCollapse = computed(() => {
   return menuStore.getCollapse
 })
-const menuList = reactive([
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    component: "dashboard/Index",
-    meta: {
-      title: '首页',
-      icon: 'House',
-      roles: ['sys:dashboard']
-    }
-  },
-  {
-    path: '/system',
-    name: 'system',
-    component: "Layout",
-    meta: {
-      title: '系统管理',
-      icon: 'Setting',
-      roles: ['sys:manage']
-    },
-    children: [
-      {
-        path: '/roleList',
-        name: 'roleList',
-        component: "/system/Role/RoleList",
-        meta: {
-          title: '角色管理',
-          icon: 'User',
-          roles: ['sys:role']
-        },
-      },
-      {
-        path: '/userList',
-        name: 'userList',
-        component: "/system/UserList",
-        meta: {
-          title: '用户管理',
-          icon: "UserFilled",
-          roles: ["sys:user"]
-        },
-      },
-      {
-        path: '/menuList',
-        name: 'menuList',
-        component: "/system/Menu/MenuList",
-        meta: {
-          title: '菜单管理',
-          icon: 'Menu',
-          roles: ['sys:menu']
-        },
-      },
-    ],
-  },
-  {
-    path: '/goodsRoot',
-    name: 'goodsRoot',
-    component: "Layout",
-    meta: {
-      title: "商品管理",
-      icon: "Shop",
-      roles: ['sys:goodsRoot'],
-    },
-    children: [
-      {
-        path: '/category',
-        name: 'category',
-        component: "/goods/Category",
-        meta: {
-          title: '物资类型',
-          icon: "Box",
-          roles: ["sys:category"],
-        },
-      },
-      {
-        path: '/goodList',
-        name: 'goodList',
-        component: "/goods/GoodList",
-        meta: {
-          title: '商品信息',
-          icon: "Wallet",
-          roles: ["sys:goodsList"],
-        }
-      }
-    ]
-  }
-])
+
+//动态菜单
+const menuList = computed(() => {
+  return menuStore.getMenu
+})
 
 
 </script>

@@ -1,10 +1,14 @@
 import { defineStore } from 'pinia'
+import { getInfoApi } from '@/api/user'
+
 export const useUserStore = defineStore('user', {
     state: () => {
         return {
             userId: '',
             nickName: '',
             token:'',
+            //menu的code，sys::manager
+            codeList:[]
         }
     },
     getters: {
@@ -17,6 +21,9 @@ export const useUserStore = defineStore('user', {
         getToken(state) {
             return state.token
         },
+        getCodeList(state){
+            return state.codeList
+        }
     },
     actions: {
         setUserId(userId: string) {
@@ -28,6 +35,18 @@ export const useUserStore = defineStore('user', {
         setToken(token: string) {
             this.token = token
         },
+        getInfo(){
+            return new Promise((resolve,reject)=>{
+                getInfoApi(this.userId).then(res=>{
+                    if(res&&res.code==200){
+                        this.codeList = res.data.permissons
+                    }
+                    resolve(this.codeList)
+                }).catch(err=>{
+                    reject(err)
+                })
+            })
+        }
     },
     persist: {
         key: 'user',

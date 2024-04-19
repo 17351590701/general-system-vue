@@ -36,3 +36,7 @@ export const getAssignTreeApi = (param:AssignParam) => {
 export const updatePasswordApi = (param:UpdateParam) => {
     return request.put("/api/sysUser/updatePassword",param)
 }
+//获取用户信息
+export const getInfoApi = (userId:string) => {
+    return request.get("/api/sysUser/getInfo",{userId:userId})
+}

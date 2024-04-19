@@ -8,15 +8,15 @@
     </div>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item @click="toLogin">前往登录</el-dropdown-item>
+        <el-dropdown-item v-if="userStore.getUserId==''" @click="toLogin">前往登录</el-dropdown-item>
         <el-dropdown-item @click="updateBtn">修改密码</el-dropdown-item>
-        <el-dropdown-item @click="loginout">退出登录</el-dropdown-item>
+        <el-dropdown-item v-if="userStore.getUserId!=''" @click="loginOut">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
   <!-- 修改密码 -->
   <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
-    @on-close="onClose" @on-confirm="commit">
+             @on-close="onClose" @on-confirm="commit">
     <template v-slot:content>
       <el-form :model="upModel" ref="formRef" :rules="rules" label-width="80px" :inline="false" size="default">
         <el-form-item label="原密码" prop="oldPassword">
@@ -36,20 +36,20 @@
 <script setup lang="ts">
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
-import { ElMessage, type FormInstance } from "element-plus";
-import { ref, reactive } from "vue";
-import { updatePasswordApi } from "@/api/user";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
+import {ElMessage, type FormInstance} from "element-plus";
+import {ref, reactive} from "vue";
+import {updatePasswordApi} from "@/api/user";
+import {useRouter} from "vue-router";
+import {useUserStore} from "@/stores/user";
 import useInstance from '@/hooks/useInstance';
 
 //获取全局global
-const { global } = useInstance()
+const {global} = useInstance()
 
 //为userId获取
 const userStore = useUserStore();
 //弹框属性
-const { dialog, onClose, onShow } = useDialog();
+const {dialog, onClose, onShow} = useDialog();
 //表单Ref属性
 const formRef = ref<FormInstance>()
 //路由
@@ -78,9 +78,9 @@ const rules = reactive({
 //修改密码
 const updateBtn = () => {
   dialog.title = "修改密码"
-  dialog.width = 550,
-    dialog.height = 150,
-    onShow()
+  dialog.width = 550
+  dialog.height = 150
+  onShow()
 }
 //表单对象
 const upModel = reactive({
@@ -92,7 +92,7 @@ const upModel = reactive({
 
 //表单提交
 function commit() {
-  upModel.userId = userStore.userId
+  upModel.userId = userStore.getUserId
   formRef.value?.validate(async (valid) => {
     if (valid) {
       //判断新密码和确认密码是否一致
@@ -107,7 +107,7 @@ function commit() {
             //清空缓存useStore
             localStorage.clear()
             //跳转登录
-            router.push({ path: '/login' })
+            await router.push({path: '/login'})
           }
         }
 
@@ -115,20 +115,22 @@ function commit() {
     }
   })
 }
+
 //跳转登录
 function toLogin() {
   router.push({
     path: '/login'
   })
 }
+
 //退出登录
-async function loginout() {
+async function loginOut() {
   //信息确定
   const confirm = await global.$myConfirm('确定退出登录吗？')
   if (confirm) {
     //清空缓存
     localStorage.clear()
-    router.push({
+    await router.push({
       path: '/login'
     })
   }

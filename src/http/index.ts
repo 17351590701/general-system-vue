@@ -1,7 +1,7 @@
 import axios, {type AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse, type AxiosRequestConfig} from 'axios';
 import {ElMessage, type MessageParamsWithType} from 'element-plus'
 import {useUserStore} from "@/stores/user";
-const userStore = useUserStore()
+
 // axios配置
 const config = {
     baseURL: 'http://localhost:8080',
@@ -34,6 +34,7 @@ class request {
         this.instance.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
                 //获取token
+                const userStore = useUserStore()
                 let token = userStore.getToken;
                 if (token) {
                     config.headers['token'] = token;

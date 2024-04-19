@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { getMenuListApi } from '@/api/menu'
 import type { RouteRecordRaw } from 'vue-router'
 import Layout from '@/layout/Index.vue'
-import Center from '@/layout/center/Center.vue'
+import Center from '@/layout/center/center.vue'
 
 //获取views下的所有vue文件
 const modules = import.meta.glob('../../views/**/*.vue')
@@ -42,11 +42,11 @@ export const useMenuStore = defineStore('menuStore', {
         getMenuList(router: any, userId: string) {
             return new Promise((resolve, reject) => {
                 getMenuListApi(userId).then((res: any) => {
-                    let accessRoter;
+                    let accessRouter;
                     if (res && res.code == 200) {
                         //生成路由
-                        accessRoter = generateRoute(res.data, router) as any
-                        this.menuList = this.menuList.concat(accessRoter)
+                        accessRouter = generateRoute(res.data, router) as any
+                        this.menuList = this.menuList.concat(accessRouter)
                     }
                     //成功
                     resolve(this.menuList)
@@ -94,17 +94,15 @@ export function generateRoute(routes: RouteRecordRaw[], router: any) {
         if (tmp.children && tmp.children.length > 0) {
             // 如果当前路由不是Layout组件且有子路由，则将子路由统一替换为Center组件
             if (route.component != 'Layout') {
-                tmp.children = Center;
+                // tmp.children = Center;
             }
             // 递归处理子路由，生成子路由的组件
             tmp.children = generateRoute(tmp.children, router);
         }
-        // 将处理后的路由记录加入到结果数组中
         res.push(tmp);
         // 将当前路由记录添加到路由实例中
         router.addRoute(tmp);
     })
-
     // 返回处理后的路由记录数组
     return res;
 }

@@ -105,7 +105,7 @@ function commit() {
           if (res && res.code == 200) {
             ElMessage.success(res.msg)
             //清空缓存useStore
-            localStorage.clear()
+            // localStorage.clear()
             //跳转登录
             await router.push({path: '/login'})
           }

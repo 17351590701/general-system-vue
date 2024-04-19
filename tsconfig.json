@@ -10,5 +10,6 @@
   ],
   "compilerOptions": {
     "types": ["vite/client"]
-  }
+  },
+  
 }

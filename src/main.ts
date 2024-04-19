@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-//创建pinia
+//引入pinia
 import { createPinia } from 'pinia'
 //pinia数据持久化操作
 import piniaPluginPersistence from 'pinia-plugin-persistedstate'
@@ -12,10 +12,13 @@ import 'element-plus/dist/index.css'
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 //引入ElementPlus的icon图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-//引入pinia
-const pinia = createPinia()
 //引入自定义全局确认框
 import myConfirm from './utils/myConfirm'
+//token权限认证
+import './permission';
+
+
+const pinia = createPinia()
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)

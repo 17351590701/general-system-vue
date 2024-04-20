@@ -39,7 +39,7 @@ router.beforeEach(async (to, from, next) => {
         }
     } else {
         // 无token时，检查路径是否在白名单内
-        if (whiteList.indexOf(to.path) !== -1) {
+        if (whiteList.indexOf(to.path)!=-1) {
             // 在白名单内，直接进入
             next();
         } else {

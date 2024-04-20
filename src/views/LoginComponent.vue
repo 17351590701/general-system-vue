@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div  class="loginContainer">
+    <div class="loginContainer">
       <div class="login">
         <div class="logo">
           LOGIN
@@ -43,7 +43,6 @@ import {type FormInstance} from 'element-plus';
 import {loginApi} from '@/api/user'
 import {useUserStore} from '@/stores/user';
 import {useRouter} from 'vue-router';
-import Register from '@/views/RegisterComponent.vue'
 //表单ref属性，用于表单验证
 const form = ref<FormInstance>()
 //表单绑定对象
@@ -80,6 +79,7 @@ const rules = {
   ],
 }
 
+
 //登录
 const login = () => {
   form.value?.validate(async (valid) => {
@@ -101,7 +101,8 @@ const login = () => {
 }
 //注册
 const toRegister = () => {
-
+  console.log(flag.value)
+  flag.value = 0
 }
 
 
@@ -113,7 +114,9 @@ const refreshCode = () => {
   imageUrl.value = `http://localhost:8080/api/sysUser/getImage?time=${date}`;
 
 }
-
+onMounted(()=>{
+  console.log(flag.value)
+})
 </script>
 
 <style scoped lang="scss">

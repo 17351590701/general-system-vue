@@ -118,9 +118,7 @@ function commit() {
 
 //前往登录
 function toLogin() {
-  router.push({
-    path: '/login'
-  })
+  window.location.href = '/login'
 }
 
 //退出登录

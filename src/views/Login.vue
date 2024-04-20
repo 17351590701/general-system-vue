@@ -38,12 +38,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import {onMounted, reactive, ref} from 'vue'
+import {reactive, ref} from 'vue'
 import {type FormInstance} from 'element-plus';
 import {loginApi} from '@/api/user'
 import {useUserStore} from '@/stores/user';
 import {useRouter} from 'vue-router';
-import Register from '@/views/RegisterComponent.vue'
 //表单ref属性，用于表单验证
 const form = ref<FormInstance>()
 //表单绑定对象

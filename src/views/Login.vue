@@ -28,8 +28,8 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button @click="login" style="width: 65%;" type="primary">登录</el-button>
-              <span><a class="toRegister" @click="toRegister">前往注册</a></span>
+              <el-button @click="login" style="width: 95%;" type="primary">登录</el-button>
+              <!--<span><a class="toRegister" @click="toRegister">前往注册</a></span>-->
             </el-form-item>
           </el-form>
         </div>

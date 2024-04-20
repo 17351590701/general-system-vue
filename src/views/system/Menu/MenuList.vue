@@ -1,33 +1,39 @@
 <template>
   <!-- 新增按钮 -->
   <el-main style="padding: 0 20px;">
-    <el-button type="primary" icon="Plus" size="default" @click="addBtn">新增</el-button>
+    <el-button v-if="global.$hasPerm(['sys:menu:add'])" type="primary" icon="Plus" size="default"
+      @click="addBtn">新增</el-button>
     <!-- 竖形表格 -->
-    <el-table style="margin-top: 20px;" :data="tableList" row-key="menuId" default-expand-all border stripe>
-      <el-table-column label="菜单名称" prop="title" width="180px"></el-table-column>
-      <el-table-column label="菜单图标" prop="icon" width="100px" align="center">
+    <el-table style="margin-top: 20px;font-size: 13px;" :data="tableList" row-key="menuId" default-expand-all border
+      stripe>
+      <el-table-column label="菜单名称" prop="title" width="150"></el-table-column>
+      <el-table-column label="图标" prop="icon" align="center">
         <template #default="scope">
           <el-icon v-if="scope.row.icon">
             <component :is="scope.row.icon"></component>
           </el-icon>
         </template>
       </el-table-column>
-      <el-table-column label="类型" prop="type" width="100px" align="center">
+      <el-table-column label="类型" prop="type" align="center">
         <template #default="scope">
           <el-tag v-if="scope.row.type === '0'" type="danger" size="default">目录</el-tag>
           <el-tag v-if="scope.row.type === '1'" type="success" size="default">菜单</el-tag>
           <el-tag v-if="scope.row.type === '2'" type="primary" size="default">按钮</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="上级菜单" prop="parentId" width="100px" align="center"></el-table-column>
+      <el-table-column label="上级菜单" prop="parentId" align="center"></el-table-column>
       <el-table-column label="路由名称" prop="name" align="center"></el-table-column>
-      <el-table-column label="路由地址" prop="path" align="center"></el-table-column>
-      <el-table-column label="组件路径" prop="url" width="270px" align="center"></el-table-column>
+      <el-table-column label="路由地址" prop="path" width="100" align="center"></el-table-column>
+      <el-table-column label="组件路径" prop="url" width="230" align="center"></el-table-column>
+      <el-table-column label="权限字段" prop="code" width="150" align="center"></el-table-column>
       <el-table-column label="序号" prop="orderNum" align="center"></el-table-column>
-      <el-table-column label="操作" prop="" align="center" width="220">
+      <el-table-column v-if="global.$hasPerm(['sys:menu:edit', 'sys:menu:delete'])" label="操作" prop="" align="center"
+        width="200">
         <template #default="scope">
-          <el-button type="primary" icon="Edit" size="default" @click="editBtn(scope.row)">编辑</el-button>
-          <el-button type="danger" icon="Delete" size="default" @click="deleteBtn(scope.row.menuId)">删除</el-button>
+          <el-button v-if="global.$hasPerm(['sys:menu:edit'])" type="primary" icon="Edit" size="default"
+            @click="editBtn(scope.row)">编辑</el-button>
+          <el-button v-if="global.$hasPerm(['sys:menu:delete'])" type="danger" icon="Delete" size="default"
+            @click="deleteBtn(scope.row.menuId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

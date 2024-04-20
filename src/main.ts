@@ -14,8 +14,13 @@ import zhCn from 'element-plus/dist/locale/zh-cn.mjs'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 //引入自定义全局确认框
 import myConfirm from './utils/myConfirm'
+//按钮权限指令
+import { permission } from '@/direvtive/permission'
+import hasPerm from '@/direvtive/hasPerm'
 //token权限认证
 import './permission';
+//echarts
+import * as echarts from 'echarts'
 
 
 const pinia = createPinia()
@@ -25,10 +30,13 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 //pinia数据持久化挂载
 pinia.use(piniaPluginPersistence)
-app.use(ElementPlus,{locale:zhCn})
+app.use(ElementPlus, { locale: zhCn })
 app.use(pinia)
+app.directive('permission', permission)
 app.use(router)
 
 app.mount('#app')
 //全局挂载自定义确认框
 app.config.globalProperties.$myConfirm = myConfirm
+app.config.globalProperties.$hasPerm = hasPerm
+app.config.globalProperties.$echarts = echarts

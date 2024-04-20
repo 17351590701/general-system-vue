@@ -16,6 +16,7 @@
           show-checkbox
           default-expand-all
           :default-checked-keys="assignTreeData.assignTreeChecked"
+          style="height:270px;width:auto;overflow-y: scroll;"
       >
       </el-tree>
     </template>

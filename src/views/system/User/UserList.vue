@@ -135,6 +135,7 @@ const addModel = reactive({
   roleId: '',
 
 })
+
 //角色下拉数据
 const options = ref([])
 //弹框信息
@@ -247,6 +248,7 @@ const editBtn = async (row: SysUser) => {
   onShow()
   //数据回显，不能加await
   nextTick(() => {
+    //将row的属性赋值给addModel
     Object.assign(addModel, row)
     addModel.roleId = roleIds.value
     addModel.password = ''

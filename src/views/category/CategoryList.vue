@@ -99,8 +99,8 @@ function searchBtn() {
 }
 //重置
 function resetBtn() {
-  addModel.categoryName = ''
-  addModel.remark = ''
+  searchParam.categoryName = ''
+  searchParam.remark = ''
   searchParam.currentPage = 1
   getList()
 }

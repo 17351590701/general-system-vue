@@ -148,7 +148,7 @@ class request {
         return this.instance.delete(url)
     }
 
-    // //图片上传
+    //图片上传
     // upload<T = Result>(url: string, params?: object): Promise<T> {
     //     return this.instance.post(url, params, {
     //         headers: {
@@ -156,6 +156,8 @@ class request {
     //         }
     //     })
     // }
+
+ 
 }
 
 export default new request(config);

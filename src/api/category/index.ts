@@ -4,6 +4,7 @@ import type{CategoryListParam,SysCategory} from './CategoryModel'
 export const getListApi=(param:CategoryListParam)=>{
     return request.get("/api/category/getList",param)
 }
+
 //新增
 export const addApi=(param:SysCategory)=>{
     return request.post("/api/category",param)
@@ -15,4 +16,9 @@ export const editApi=(param:SysCategory)=>{
 //删除
 export const deleteApi=(categoryId:string)=>{
     return request.delete("/api/category/"+categoryId)
+}
+
+//下拉数据
+export const getSelectApi=()=>{
+    return request.get("/api/category/selectList")
 }

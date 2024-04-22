@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, type RouteRecordRaw  } from 'vue-router'
 import Layout from '@/layout/Index.vue'
 
 //动态生成路由
@@ -24,12 +24,6 @@ export const constantRoutes: Array<RouteRecordRaw> = [
         name: 'login',
         component: () => import('@/views/Login.vue')
     },
-    {
-        path:'/:pathMatch(.*)*',
-        name:'notFound',
-        redirect:'/404'
-    }
-    ,
     {
         path:'/404',
         name:'NotPage',

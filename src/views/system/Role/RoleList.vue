@@ -31,9 +31,15 @@
     </el-table>
 
     <!-- 分页-->
-    <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="searchParam.currentPage"
-      :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize" layout="total, sizes, prev, pager, next, jumper"
-      :total="searchParam.total"></el-pagination>
+    <el-pagination 
+    @size-change="sizeChange" 
+    @current-change="currentChange" 
+    :current-page="searchParam.currentPage"
+      :page-sizes="[10, 20, 30, 40]" 
+      :page-size="searchParam.pageSize" 
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="searchParam.total">
+    </el-pagination>
 
     <!-- 新增、编辑弹框 -->
     <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
@@ -81,11 +87,11 @@ const addModel = reactive({
   roleName: '',
   remark: ''
 })
-//表单绑定的对象，如果传到后端parm中的角色名不为空，则将角色名作为查询条件，使用like操作符进行模糊查询
+//表单绑定的对象，如果传到后端param中的角色名不为空，则将角色名作为查询条件，使用like操作符进行模糊查询
 const searchParam: RoleListParam = reactive({
+  roleName: '',
   currentPage: 1,
   pageSize: 10,
-  roleName: '',
   total: 0
 })
 //表单验证规则,必须输入roleName

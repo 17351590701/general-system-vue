@@ -10,7 +10,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
         children: [
             {
                 path: '/dashboard',
-                component: () => import('@/views/dashboard/Index.vue'),
+                component: () => import('@/views/Dashboard.vue'),
                 name: 'dashboard',
                 meta: {
                     title: '首页',
@@ -24,8 +24,26 @@ export const constantRoutes: Array<RouteRecordRaw> = [
         name: 'login',
         component: () => import('@/views/Login.vue')
     },
+    {
+        path:'/:pathMatch(.*)*',
+        name:'notFound',
+        redirect:'/404'
+    }
+    ,
+    {
+        path:'/404',
+        name:'NotPage',
+        component:()=>import('@/views/404.vue')
+    }
 
 ]
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes: constantRoutes
+})
+
+export default router
 
 //静态路由
 // const routes: Array<RouteRecordRaw> = [
@@ -126,9 +144,3 @@ export const constantRoutes: Array<RouteRecordRaw> = [
 //     }
 // ]
 
-const router = createRouter({
-    history: createWebHistory(),
-    routes: constantRoutes
-})
-
-export default router

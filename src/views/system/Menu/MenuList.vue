@@ -4,8 +4,16 @@
     <el-button v-if="global.$hasPerm(['sys:menu:add'])" type="primary" icon="Plus" size="default"
       @click="addBtn">新增</el-button>
     <!-- 竖形表格 -->
-    <el-table style="margin-top: 20px;font-size: 13px;" :data="tableList" row-key="menuId" default-expand-all border
-      stripe>
+    <el-table 
+    style="margin-top: 20px;font-size: 13px;" 
+    :height="tableHeight"
+    :data="tableList" 
+    row-key="menuId" 
+    default-expand-all 
+    border
+    stripe
+
+      >
       <el-table-column label="菜单名称" prop="title" width="150"></el-table-column>
       <el-table-column label="图标" prop="icon" align="center">
         <template #default="scope">
@@ -271,9 +279,13 @@ const getList = async () => {
     tableList.value = res.data
   }
 }
-
+//table表格高度
+const tableHeight=ref()
 onMounted(() => {
   getList()
+  nextTick(()=>{
+    tableHeight.value=window.innerHeight-200
+  })
 })
 </script>
 

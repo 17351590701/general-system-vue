@@ -2,7 +2,7 @@ import router from "@/router"
 import { useUserStore } from "@/stores/user";
 import { useMenuStore } from "@/stores/menu";
 // 定义不需要验证的路径白名单
-const whiteList = ['/login']
+const whiteList = ['/login','/404']
 
 // 路由全局前置守卫
 router.beforeEach(async (to, from, next) => {
@@ -13,7 +13,7 @@ router.beforeEach(async (to, from, next) => {
     const token = userStore.getToken
     // 检查token是否存在
     if (token) {
-        // 判断用户是从登录页或首页跳转过来，若是则直接放行，否则需获取菜单数据
+        //
         if (to.path === '/login' || to.path === '/') {
             next({ path: '/' })
         } else {

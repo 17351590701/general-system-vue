@@ -67,7 +67,7 @@
       </el-table-column>
       <el-table-column prop="goodName" label="商品名称"></el-table-column>
       <el-table-column prop="description" label="商品描述"></el-table-column>
-      <el-table-column prop="price" label="价格"></el-table-column>
+      <el-table-column prop="price" label="价格/(元)"></el-table-column>
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button type="primary" size="default" @click="editBtn(scope.row)">编辑</el-button>
@@ -88,12 +88,13 @@
 import {ref, reactive, onMounted, nextTick} from 'vue';
 import SysDialog from '@/components/SysDialog.vue'
 import useDialog from '@/hooks/useDialog'
-import {getListApi, addGoodApi, deleteGoodApi, editGoodApi} from '@/api/good'
+import {getListApi, addGoodApi, deleteGoodApi, editGoodApi,getCategoryListApi} from '@/api/good'
 import {getSelectApi} from '@/api/category'
 import {type FormInstance, ElMessage} from 'element-plus';
 import type {GoodModel} from '@/api/good/GoodModel';
 import useInstance from '@/hooks/useInstance';
 import SelectChecked from "@/components/SelectChecked.vue";
+import {getRoleListApi} from "@/api/user";
 
 
 const {global} = useInstance()
@@ -153,17 +154,35 @@ const addBtn = async () => {
   dialog.height = 300
   addRef.value?.resetFields()
   onShow()
+  //清空下拉数据
+  options.value=[];
+  bindValue.value=[];
+  //重新获取下拉数据
+  await getSelect()
+  //查询该商品对应的分类
+  nextTick(()=>{
+    selectRef.value.clear()
+  })
+  //清空表单
+  addRef.value?.resetFields()
 }
 
 //编辑
-const editBtn = (row: GoodModel) => {
+const editBtn = async(row: GoodModel) => {
   tags.value = '1'
   dialog.title = '编辑'
   dialog.height = 300
+  options.value=[];
+  bindValue.value=[];
+  await getSelect();
+  await getCategoryList(row.goodId)
   onShow()
   nextTick(() => {
     Object.assign(addModel, row)
+    addModel.categoryId=categoryIds.value
   })
+
+  addRef.value?.resetFields();
 }
 //删除
 const deleteBtn = async (goodId: string) => {
@@ -183,10 +202,8 @@ const commit = () => {
     if (valid) {
       let res = null;
       if (tags.value == '0') {
-        console.log(addModel)
         res = await addGoodApi(addModel)
       } else {
-        console.log(addModel)
         res = await editGoodApi(addModel)
       }
       if (res && res.code == 200) {
@@ -199,7 +216,6 @@ const commit = () => {
 }
 //table列表查询
 const tableList = ref([])
-
 async function getList() {
   let res = await getListApi(searchParam)
   if (res && res.code == 200) {
@@ -211,20 +227,29 @@ async function getList() {
 //商品已经拥有的分类
 const bindValue=ref([])
 const selectRef=ref()
-const categoryList = ref([])
 //下拉菜单类
 const options = ref([])
-async function getCategoryList() {
+async function getSelect() {
   let res = await getSelectApi()
   if (res && res.code == 200) {
-    console.log(res.data)
     options.value=res.data;
   }
+}
+//存取已经对应的分类id，以“，”分隔
+const categoryIds = ref('')
+//根据商品id查询对应分类
+const getCategoryList=async(goodId:string)=>{
+  
+  let res = await getCategoryListApi(goodId)
+  if (res && res.code == 200) {
+    bindValue.value = res.data
+    categoryIds.value = res.data.join(',')
+  }
+
 }
 //勾选的值
 const selected = (value: Array<string | number>) => {
   addModel.categoryId = value.join(",")
-  console.log(addModel.categoryId)
 }
 
 
@@ -248,7 +273,6 @@ const currentChange = (page: number) => {
 const tableHeight = ref(0)
 onMounted(() => {
   getList();
-  getCategoryList();
   nextTick(() => {
     tableHeight.value = window.innerHeight - 200
   })

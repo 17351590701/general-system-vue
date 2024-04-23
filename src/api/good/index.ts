@@ -17,3 +17,7 @@ export const editGoodApi=(param:GoodModel)=>{
 export const getListApi=(param:GoodListParam)=>{
     return request.get("/api/good/getList",param)
 }
+//根据商品id查询对应商品类型
+export const getCategoryListApi=(goodId:string)=>{
+    return request.get("/api/good/getCategoryList",{goodId:goodId})
+}

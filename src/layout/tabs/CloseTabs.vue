@@ -1,12 +1,12 @@
 <template>
   <div class="close">
     <el-dropdown>
-    <span class="el-dropdown-link">
-      <el-icon class="el-icon--right">
-    <Close/>
-      </el-icon>
-      关闭
-    </span>
+      <span class="el-dropdown-link">
+        <el-icon class="el-icon--right">
+          <Close />
+        </el-icon>
+        关闭Tab
+      </span>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item @click="closeCurrent()">关闭当前</el-dropdown-item>
@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
-import {Close} from "@element-plus/icons-vue";
-import type {Tab} from "@/stores/tabs";
-import {useRouter, useRoute} from 'vue-router'
-import {useTabStore} from "@/stores/tabs"
+import { Close } from "@element-plus/icons-vue";
+import type { Tab } from "@/stores/tabs";
+import { useRouter, useRoute } from 'vue-router'
+import { useTabStore } from "@/stores/tabs"
 
 const tabStore = useTabStore()
 const route = useRoute()
@@ -55,12 +55,12 @@ const closeCurrent = () => {
   //重新设置选项卡数据
   tabStore.tabList = tabs.filter((tab) => tab.path !== targetName)
   //跳转路由到新激活选项卡
-  router.push({path: activeName})
+  router.push({ path: activeName })
 }
 //关闭左侧
 const closeLeft = () => {
   const path = route.path
-//获取当前选项卡路由的索引
+  //获取当前选项卡路由的索引
   let index = tabStore.tabList.findIndex(item => item.path === path)
   //从1开始，首页不能删除
   tabStore.tabList.splice(1, index - 1)
@@ -76,18 +76,18 @@ const closeRight = () => {
 
 //关闭所有
 const closeAll = () => {
-tabStore.tabList.splice(1,tabStore.tabList.length-1)
+  tabStore.tabList.splice(1, tabStore.tabList.length - 1)
   //跳转到首页
-  router.push({path: '/dashboard'})
+  router.push({ path: '/dashboard' })
 }
 </script>
 
 <style scoped lang="scss">
 .close {
-  width: 60px;
-  height: 30px;
+  width: 80px;
+  height: 35px;
   position: fixed;
-  top: 60px;
+  top: 50px;
   right: 0;
   z-index: 999;
   display: flex;
@@ -112,5 +112,4 @@ tabStore.tabList.splice(1,tabStore.tabList.length-1)
   font-size: 15px;
   outline: none;
 }
-
 </style>

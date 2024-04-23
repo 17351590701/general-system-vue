@@ -16,3 +16,8 @@ export type GoodListParam={
     pageSize:number,
     total:number
 }
+export type GoodCondition={
+  categoryIds:string,
+  priceMin:string,
+  priceMax:string
+}

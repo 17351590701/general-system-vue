@@ -1,5 +1,6 @@
 import request from '@/http'
-import type { Login, SysUser, UserListParam ,AssignParam,UpdateParam} from './UserModel'
+import type { Login, SysUser, UserListParam ,AssignParam,UpdateParam, shopListModel} from './UserModel'
+import {type shopModel } from '../good/GoodModel'
 //新增
 export const addApi = (param: SysUser) => {
     return request.post("/api/sysUser", param)
@@ -26,6 +27,7 @@ export const resetPasswordApi = (param: { userId: string }) => {
 }
 //登录
 export const loginApi = (param:Login) => {
+    console.log(param)
     return request.post("/api/sysUser/login", param)
 }
 //查询菜单树
@@ -39,4 +41,17 @@ export const updatePasswordApi = (param:UpdateParam) => {
 //获取用户信息
 export const getInfoApi = (userId:string) => {
     return request.get("/api/sysUser/getInfo",{userId:userId})
+}
+//购物车
+export const shopCartApi=(param:shopModel)=>{
+    return request.post("/api/sysUser/shopCart",param)
+}
+//查询所有购物车商品信息
+export const shopCartListApi=(param:shopListModel)=>{
+    console.log(param);
+    return request.get("/api/sysUser/getShopList",param)
+}
+//退单，根据uesrId和goodId删除
+export const cancelApi=(param:shopModel)=>{
+    return request.post("/api/sysUser/cancel",param)
 }

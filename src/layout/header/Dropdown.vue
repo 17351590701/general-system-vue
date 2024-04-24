@@ -8,7 +8,6 @@
     </div>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item v-if="userStore.getUserId == ''" @click="toLogin">前往登录</el-dropdown-item>
         <el-dropdown-item @click="updateBtn">修改密码</el-dropdown-item>
         <el-dropdown-item v-if="userStore.getUserId != ''" @click="loginOut">退出登录</el-dropdown-item>
       </el-dropdown-menu>

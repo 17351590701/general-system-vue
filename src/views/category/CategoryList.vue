@@ -9,9 +9,9 @@
         <el-input v-model="searchParam.remark" placeholder="请输入类型描述" style="width:300px"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button icon="Search" @click="searchBtn">搜索</el-button>
-        <el-button icon="Close" type="danger" @click="resetBtn">重置</el-button>
-        <el-button icon="Plus" type="primary" @click="addBtn">新增</el-button>
+        <el-button v-if="global.$hasPerm(['sys:category:search'])" icon="Search" @click="searchBtn">搜索</el-button>
+        <el-button icon="Close" type="danger" @click="resetBtn">清空</el-button>
+        <el-button v-if="global.$hasPerm(['sys:category:add'])" icon="Plus" type="primary" @click="addBtn">新增</el-button>
       </el-form-item>
     </el-form>
 
@@ -37,10 +37,10 @@
     <el-table :data="tableList" border stripe :height="tableHeight">
       <el-table-column prop="categoryName" label="商品类型"></el-table-column>
       <el-table-column prop="remark" label="类型描述"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column v-if="global.$hasPerm(['sys:category:edit','sys:category:delete'])" label="操作">
         <template #default="scope">
-          <el-button size="default" type="primary" icon="Edit" @click="editBtn(scope.row)">编辑</el-button>
-          <el-button size="default" type="danger" icon="Delete" @click="deleteBtn(scope.row.categoryId)">删除</el-button>
+          <el-button v-if="global.$hasPerm(['sys:category:edit'])" size="default" type="primary" icon="Edit" @click="editBtn(scope.row)">编辑</el-button>
+          <el-button v-if="global.$hasPerm(['sys:category:delete'])" size="default" type="danger" icon="Delete" @click="deleteBtn(scope.row.categoryId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>

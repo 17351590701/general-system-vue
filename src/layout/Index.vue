@@ -29,6 +29,7 @@ import Header from "@/layout/header/Header.vue";
 import MenuBar from "@/layout/menu/MenuBar.vue";
 import Tabs from "@/layout/tabs/Tabs.vue";
 import CloseTabs from "@/layout/tabs/CloseTabs.vue";
+import ShoppingCart from "@/views/system/User/ShoppingCart.vue";
 </script>
 
 <style scoped lang="scss">

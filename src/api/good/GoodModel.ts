@@ -4,6 +4,7 @@ export type GoodModel = {
   description:string,
   price:string,
   pictureKey:string,
+  categoryId:string,
   createTime:string,
   updateTime:string,
 
@@ -20,4 +21,8 @@ export type GoodCondition={
   categoryIds:string,
   priceMin:string,
   priceMax:string
+}
+export type shopModel={
+  userId:string,
+  goodId:string,
 }

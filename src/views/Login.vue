@@ -39,7 +39,7 @@
 </template>
 <script setup lang="ts">
 import {reactive, ref} from 'vue'
-import {type FormInstance} from 'element-plus';
+import {ElMessage, type FormInstance} from 'element-plus';
 import {loginApi} from '@/api/user'
 import {useUserStore} from '@/stores/user';
 import {useRouter} from 'vue-router';
@@ -90,6 +90,7 @@ const login = () => {
         userStore.setUserId(res.data.userId)
         userStore.setNickName(res.data.nickName)
         userStore.setToken(res.data.token)
+        ElMessage.success("登录成功")
         //跳转至首页
         await router.push('/')
       }

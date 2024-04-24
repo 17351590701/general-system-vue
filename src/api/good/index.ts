@@ -1,5 +1,5 @@
 import request from '@/http'
-import { type GoodListParam, type GoodModel ,type GoodCondition} from '@/api/good/GoodModel'
+import { type GoodListParam, type GoodModel ,type GoodCondition ,type shopModel} from '@/api/good/GoodModel'
 //新增
 export const addGoodApi=(param:GoodModel)=>{
     console.log(param);
@@ -23,7 +23,5 @@ export const getCategoryListApi=(goodId:string)=>{
 }
 //根据条件查询商品
 export const getGoodConditionApi=(param:GoodCondition)=>{
-    console.log(param);
-    
     return request.get("/api/good/goodCondition",param)
 }

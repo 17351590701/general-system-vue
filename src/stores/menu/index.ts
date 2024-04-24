@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { getMenuListApi } from '@/api/menu'
 import type { RouteRecordRaw } from 'vue-router'
+import ShoppingCart from '@/views/system/User/ShoppingCart.vue'
 import Layout from '@/layout/Index.vue'
 
 //获取views下的所有vue文件

@@ -109,7 +109,8 @@ const clear = () => {
 }
 //暴露出去，给外部组件使用
 defineExpose({
-  clear
+  clear,
+  selectedOptions,
 })
 watch(
     () => props.bindValue,

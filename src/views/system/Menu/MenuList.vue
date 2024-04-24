@@ -210,12 +210,12 @@ const tags = ref('')
 const addBtn = () => {
   tags.value = '0'
   dialog.title = "新增"
+  //清空表单
+  addRef.value?.resetFields();
   //获取上级菜单
   getParent()
   //显示弹框
   onShow();
-  //清空表单
-  addRef.value?.resetFields();
 
 }
 //编辑按钮

@@ -34,3 +34,10 @@ export type UpdateParam={
     oldPassword:string,
     newPassword:string
 }
+//返回所有购物车信息
+export type shopListModel={
+    userId:string,
+    currentPage:number,
+    pageSize:number,
+    total:number
+}

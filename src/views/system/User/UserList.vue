@@ -10,7 +10,7 @@
       </el-form-item>
       <el-form-item>
         <el-button icon="Search" @click="searchBtn">搜索</el-button>
-        <el-button icon="Close" type="danger" @click="resetBtn">重置</el-button>
+        <el-button icon="Close" type="danger" @click="resetBtn">清空</el-button>
         <el-button v-if="global.$hasPerm(['sys:user:add'])" icon="Plus" type="primary" @click="addBtn">新增</el-button>
       </el-form-item>
     </el-form>

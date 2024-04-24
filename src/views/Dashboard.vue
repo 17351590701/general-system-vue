@@ -2,7 +2,7 @@
   <el-card style="margin-left: 20px;flex: 1;">
     <template #header>
       <div class="card-header">
-        <span>热门商品</span>
+        <span>商品大全</span>
       </div>
     </template>
     <div ref="myChartRef" :style="{width:'400px',height:'300px'}"></div>
@@ -10,7 +10,6 @@
 </template>
 
 <script setup lang="ts">
-// import * as echarts from 'echarts';
 import {nextTick, onMounted, reactive, ref} from "vue";
 import useInstance from '@/hooks/useInstance'
 
@@ -23,31 +22,61 @@ const chart = () => {
   //初始化，传递ref
   const chartInstance = global.$echarts.init(myChartRef.value)
   //配置项
-  let option = reactive({
-    title: {
-      subtext: 'Fake Data',
-      left: 'center'
-    },
-    tooltip: {
-      trigger: 'item'
-    },
-    xAxis: {
-      data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"]
-    },
-    yAxis: {
-      type: 'value'
-    },
-    series: [{
-      name: '销量',
-      type: 'bar',
-      data: [5, 20, 36, 10, 10, 20]
-    }]
-  });
-  //通过axios发送请求获取数据，设置到option的data中
+  const option = {
+  tooltip: {
+    trigger: 'item'
+  },
+  legend: {
+    top: '5%',
+    left: 'center'
+  },
+  series: [
+    {
+      name: 'Access From',
+      type: 'pie',
+      radius: ['40%', '70%'],
+      avoidLabelOverlap: false,
+      itemStyle: {
+        borderRadius: 10,
+        borderColor: '#fff',
+        borderWidth: 2
+      },
+      label: {
+        show: false,
+        position: 'center'
+      },
+      emphasis: {
+        label: {
+          show: true,
+          fontSize: 40,
+          fontWeight: 'bold'
+        }
+      },
+      labelLine: {
+        show: false
+      },
+      data: [
+        { value: 10, name: 'Search Engine' },
+        { value: 735, name: 'Direct' },
+        { value: 580, name: 'Email' },
+        { value: 484, name: 'Union Ads' },
+        { value: 300, name: 'Video Ads' }
+      ]
+    }
+  ]
+};
 
   chartInstance.setOption(option)
 }
 
+
+// function getData(){
+//     //通过axios发送请求获取数据，设置到option的data中
+//     getListApi({}).then(res=>{
+//       console.log(res)
+//     })
+    
+//   }
 onMounted(()=>{
   chart();
   nextTick(()=>{

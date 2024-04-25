@@ -8,8 +8,10 @@
       </template>
       <p style="margin-bottom: 50px;">商品分类统计（商品可能含有多个分类）</p>
       <div ref="myChartRef" :style="{ width: '400px', height: '300px'}"></div>
-
     </el-card>
+    <div class="log">
+
+    </div>
     <div class="shop">
       <ShoppingCart></ShoppingCart>
     </div>
@@ -115,30 +117,3 @@ onMounted(() => {
   }
 }
 </style>
-
-<!-- 
-
-
-map
-: 
-家具
-: 
-1
-玩具
-: 
-2
-食物
-: 
-2
-[[Prototype]]
-: 
-Object
-total
-: 
-3
-[[Prototype]]
-: 
-Object
-
-
- -->

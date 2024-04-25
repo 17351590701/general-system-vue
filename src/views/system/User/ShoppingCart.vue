@@ -1,11 +1,11 @@
 <template>
-  <el-card style="margin-left: 20px;width: 900px">
+  <el-card style="margin-left: 20px;width: auto;">
     <template #header>
       <div class="card-header">
         <span>购物车</span>
       </div>
     </template>
-    <el-table :data="tableList" border stripe>
+    <el-table :data="tableList" border stripe style="height: 530px;">
       <el-table-column label="商品图片" width="250">
         <template #default="scope">
           <el-image style="width: 50px; height: 70px" :src="'http://localhost:8080/api/files/' + scope.row.pictureKey"

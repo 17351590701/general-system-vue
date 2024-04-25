@@ -22,3 +22,7 @@ export const deleteApi=(categoryId:string)=>{
 export const getSelectApi=()=>{
     return request.get("/api/category/selectList")
 }
+//获取图形数据
+export const getEchartsApi=()=>{
+    return request.get("/api/category/getEcharts")
+}

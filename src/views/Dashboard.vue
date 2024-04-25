@@ -1,88 +1,144 @@
 <template>
-  <el-card style="margin-left: 20px;flex: 1;">
-    <template #header>
-      <div class="card-header">
-        <span>商品大全</span>
-      </div>
-    </template>
-    <div ref="myChartRef" :style="{width:'400px',height:'300px'}"></div>
-  </el-card>
+  <div class="container">
+    <el-card class="echart">
+      <template #header>
+        <div class="card-header">
+          <span>商品总数: {{ total }}</span>
+        </div>
+      </template>
+      <p style="margin-bottom: 50px;">商品分类统计（商品可能含有多个分类）</p>
+      <div ref="myChartRef" :style="{ width: '400px', height: '300px'}"></div>
+
+    </el-card>
+    <div class="shop">
+      <ShoppingCart></ShoppingCart>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import {nextTick, onMounted, reactive, ref} from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 import useInstance from '@/hooks/useInstance'
+import ShoppingCart from "@/views/system/User/ShoppingCart.vue";
+import { getEchartsApi } from "@/api/category";
 
-const {global} = useInstance()
+const { global } = useInstance()
 const mainHeight = ref(0)
 const myChartRef = ref<HTMLDivElement>()
 
-//图形
-const chart = () => {
-  //初始化，传递ref
+const total = ref(0)
+const dataList = ref<{ value: number; name: string }[]>([])
+
+// 图形
+const chart = async () => {
+  let res = await getEchartsApi()
+
+  if (res && res.code === 200) {
+    // 更新total和dataList
+    total.value = res.data.total;
+
+    const transformedDataList = Object.entries(res.data.map).map(([category, count]) => ({
+      value: count as number,
+      name: category,
+    }));
+
+    dataList.value = transformedDataList;
+  }
+
+  // 初始化，传递ref
   const chartInstance = global.$echarts.init(myChartRef.value)
-  //配置项
-  const option = {
-  tooltip: {
-    trigger: 'item'
-  },
-  legend: {
-    top: '5%',
-    left: 'center'
-  },
-  series: [
-    {
-      name: 'Access From',
-      type: 'pie',
-      radius: ['40%', '70%'],
-      avoidLabelOverlap: false,
-      itemStyle: {
-        borderRadius: 10,
-        borderColor: '#fff',
-        borderWidth: 2
-      },
-      label: {
-        show: false,
-        position: 'center'
-      },
-      emphasis: {
+
+  // 配置项
+  const option = reactive({
+    tooltip: {
+      trigger: 'item'
+    },
+    legend: {
+      top: '5%',
+      left: 'center'
+    },
+    series: [
+      {
+        name: '商品分类',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
         label: {
-          show: true,
-          fontSize: 40,
-          fontWeight: 'bold'
-        }
-      },
-      labelLine: {
-        show: false
-      },
-      data: [
-        { value: 10, name: 'Search Engine' },
-        { value: 735, name: 'Direct' },
-        { value: 580, name: 'Email' },
-        { value: 484, name: 'Union Ads' },
-        { value: 300, name: 'Video Ads' }
-      ]
-    }
-  ]
-};
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 40,
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: dataList.value // Use dataList.value here
+      }
+    ]
+  });
 
   chartInstance.setOption(option)
 }
 
-
-// function getData(){
-//     //通过axios发送请求获取数据，设置到option的data中
-//     getListApi({}).then(res=>{
-//       console.log(res)
-//     })
-    
-//   }
-onMounted(()=>{
+onMounted(() => {
   chart();
-  nextTick(()=>{
-    mainHeight.value=window.innerHeight-100
+  nextTick(() => {
+    mainHeight.value = window.innerHeight - 100
   })
 })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.container {
+  display: flex;
+  height: 85vh;
+  width: 100vw;
+
+  .echart {
+    margin-left: 20px;
+    width: 500px
+  }
+
+  .shop {
+    width: 50%;
+    height: 50%
+  }
+}
+</style>
+
+<!-- 
+
+
+map
+: 
+家具
+: 
+1
+玩具
+: 
+2
+食物
+: 
+2
+[[Prototype]]
+: 
+Object
+total
+: 
+3
+[[Prototype]]
+: 
+Object
+
+
+ -->

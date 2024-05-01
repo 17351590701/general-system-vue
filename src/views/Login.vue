@@ -1,30 +1,24 @@
 <template>
   <div class="container">
-    <div  class="loginContainer">
+    <div class="loginContainer">
       <div class="login">
         <div class="logo">
           LOGIN
         </div>
         <div class="content">
-          <el-form :model="loginModel"
-                   ref="form"
-                   :rules="rules"
-                   style="margin-left: 60px"
-
-          >
+          <el-form :model="loginModel" ref="form" :rules="rules" style="margin-left: 60px">
             <el-form-item prop="username">
               <el-input v-model="loginModel.username" prefix-icon="user" placeholder="请输入用户名"
-                        style="width: 95%;"></el-input>
+                style="width: 95%;"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <el-input v-model="loginModel.password" show-password prefix-icon="lock" placeholder="请输入密码"
-                        style="width: 95%;"></el-input>
+                style="width: 95%;"></el-input>
             </el-form-item>
 
             <el-form-item prop="code">
               <el-input v-model="loginModel.code" placeholder="请输入验证码" style="width: 70%;"></el-input>
-              <img :src="imageUrl" alt="验证码" style="width: 50px;height: 30px;margin-left: 15px;"
-                   @click="refreshCode">
+              <img :src="imageUrl" alt="验证码" style="width: 50px;height: 30px;margin-left: 15px;" @click="refreshCode">
             </el-form-item>
 
             <el-form-item>
@@ -38,11 +32,11 @@
   </div>
 </template>
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
-import {ElMessage, type FormInstance} from 'element-plus';
-import {loginApi} from '@/api/user'
-import {useUserStore} from '@/stores/user';
-import {useRouter} from 'vue-router';
+import { reactive, ref } from 'vue'
+import { ElMessage, type FormInstance } from 'element-plus';
+import { loginApi } from '@/api/user'
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 //表单ref属性，用于表单验证
 const form = ref<FormInstance>()
 //表单绑定对象
@@ -98,10 +92,6 @@ const login = () => {
       console.log("登录失败")
     }
   })
-}
-//注册
-const toRegister = () => {
-
 }
 
 

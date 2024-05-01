@@ -37,7 +37,7 @@ import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
 import { ElMessage, type FormInstance } from "element-plus";
 import { ref, reactive } from "vue";
-import { updatePasswordApi } from "@/api/user";
+import { updatePasswordApi, loginOutApi } from "@/api/user";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user";
 import useInstance from '@/hooks/useInstance';
@@ -125,10 +125,14 @@ async function loginOut() {
   //信息确定
   const confirm = await global.$myConfirm('确定退出登录吗？')
   if (confirm) {
-    //清空缓存
-    localStorage.clear()
-    //不通过路由跳转
-    window.location.href = '/login'
+    let res = await loginOutApi()
+    if (res && res.code == 200) {
+      //清空缓存
+      localStorage.clear()
+      //不通过路由跳转
+      window.location.href = '/login'
+
+    }
 
   }
 

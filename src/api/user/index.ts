@@ -27,8 +27,11 @@ export const resetPasswordApi = (param: { userId: string }) => {
 }
 //登录
 export const loginApi = (param:Login) => {
-    console.log(param)
     return request.post("/api/sysUser/login", param)
+}
+//退出登录
+export const loginOutApi=()=>{
+    return request.post("/api/sysUser/loginOUt")
 }
 //查询菜单树
 export const getAssignTreeApi = (param:AssignParam) => {

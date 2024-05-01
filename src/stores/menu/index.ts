@@ -70,9 +70,6 @@ export const useMenuStore = defineStore('menuStore', {
 
 /**
  *  //动态生成路由,根据提供的路由记录数组和路由实例，生成并处理路由配置。
- * @param routes 路由记录数组，包含待处理的路由信息。
- * @param router 路由实例，用于添加生成后的路由配置。
- * @returns 返回处理后的路由记录数组。
  */
 export function generateRoute(routes: RouteRecordRaw[], router: any) {
     // 初始化处理后的路由数组

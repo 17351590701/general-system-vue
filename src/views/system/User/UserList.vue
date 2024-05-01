@@ -26,24 +26,29 @@
       <el-table-column prop="phone" label="手机号"></el-table-column>
       <el-table-column prop="email" label="邮箱"></el-table-column>
       <el-table-column prop="username" label="账户"></el-table-column>
-      <el-table-column v-if="global.$hasPerm(['sys:user:edit','sys:user:reset','sys:user:delete'])" align="center" width="320" label="操作">
+      <el-table-column v-if="global.$hasPerm(['sys:user:edit','sys:user:reset','sys:user:delete'])" align="center"
+                       width="320" label="操作">
         <template #default="scope">
           <el-button v-if="global.$hasPerm(['sys:user:edit'])" type="primary" size="default" icon="Edit"
-            @click="editBtn(scope.row)">编辑</el-button>
+                     @click="editBtn(scope.row)">编辑
+          </el-button>
           <el-button v-if="global.$hasPerm(['sys:user:reset'])" type="warning" size="default" icon="Setting"
-            @click="resetPasswordBtn(scope.row.userId)">重置密码</el-button>
+                     @click="resetPasswordBtn(scope.row.userId)">重置密码
+          </el-button>
           <el-button v-if="global.$hasPerm(['sys:user:delete'])" type="danger" size="default" icon="Delete"
-            @click="deleteBtn(scope.row.userId)">删除</el-button>
+                     @click="deleteBtn(scope.row.userId)">删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页-->
     <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="searchParam.currentPage"
-      :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize" layout="total, sizes, prev, pager, next, jumper"
-      :total="searchParam.total"></el-pagination>
+                   :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize"
+                   layout="total, sizes, prev, pager, next, jumper"
+                   :total="searchParam.total"></el-pagination>
     <!-- 新增编辑弹框 -->
     <SysDialog :title="dialog.title" :visible="dialog.visible" :height="dialog.height" :width="dialog.width"
-      @on-close="onClose" @on-confirm="commit">
+               @on-close="onClose" @on-confirm="commit">
       <template v-slot:content>
         <el-form :model="addModel" ref="addRef" :rules="rules" size="default" label-width="80px">
           <el-row>
@@ -101,20 +106,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from 'vue'
+import {ref, reactive, onMounted, nextTick} from 'vue'
 //引入弹窗模型组件
 import SysDialog from '@/components/SysDialog.vue';
 //配置弹窗信息
 import useDialog from '@/hooks/useDialog';
-import { ElMessage, type FormInstance } from 'element-plus';
+import {ElMessage, type FormInstance} from 'element-plus';
 //引入多选框
 import SelectChecked from '@/components/SelectChecked.vue'
-import { getSelectApi } from '@/api/role'
-import { getListApi, addApi, deleteApi, getRoleListApi, editApi, resetPasswordApi } from "@/api/user";
-import { type SysUser } from '@/api/user/UserModel'
+import {getSelectApi} from '@/api/role'
+import {getListApi, addApi, deleteApi, getRoleListApi, editApi, resetPasswordApi} from "@/api/user";
+import {type SysUser} from '@/api/user/UserModel'
 import useInstance from '@/hooks/useInstance';
 //获取全局global
-const { global } = useInstance()
+const {global} = useInstance()
 //搜索栏绑定对象
 const searchParam = reactive({
   phone: '',
@@ -139,7 +144,7 @@ const addModel = reactive({
 //角色下拉数据
 const options = ref([])
 //弹框信息
-const { dialog, onClose, onShow } = useDialog()
+const {dialog, onClose, onShow} = useDialog()
 
 //新增表单ref属性，用于验证
 const addRef = ref<FormInstance>()
@@ -276,7 +281,7 @@ const deleteBtn = async (userId: string) => {
 const resetPasswordBtn = async (userId: string) => {
   const confirm = await global.$myConfirm('确定重置密码吗？重置密码为[666666]')
   if (confirm) {
-    let res = await resetPasswordApi({ userId: userId })
+    let res = await resetPasswordApi({userId: userId})
     if (res && res.code == 200) {
       ElMessage.success(res.msg)
     }

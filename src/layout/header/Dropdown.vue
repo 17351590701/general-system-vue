@@ -15,7 +15,7 @@
   </el-dropdown>
   <!-- 修改密码 -->
   <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
-    @on-close="onClose" @on-confirm="commit">
+             @on-close="onClose" @on-confirm="commit">
     <template v-slot:content>
       <el-form :model="upModel" ref="formRef" :rules="rules" label-width="80px" :inline="false" size="default">
         <el-form-item label="原密码" prop="oldPassword">
@@ -35,20 +35,20 @@
 <script setup lang="ts">
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
-import { ElMessage, type FormInstance } from "element-plus";
-import { ref, reactive } from "vue";
-import { updatePasswordApi, loginOutApi } from "@/api/user";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
+import {ElMessage, type FormInstance} from "element-plus";
+import {ref, reactive} from "vue";
+import {updatePasswordApi, loginOutApi} from "@/api/user";
+import {useRouter} from "vue-router";
+import {useUserStore} from "@/stores/user";
 import useInstance from '@/hooks/useInstance';
 
 //获取全局global
-const { global } = useInstance()
+const {global} = useInstance()
 
 //为userId获取
 const userStore = useUserStore();
 //弹框属性
-const { dialog, onClose, onShow } = useDialog();
+const {dialog, onClose, onShow} = useDialog();
 //表单Ref属性
 const formRef = ref<FormInstance>()
 //路由

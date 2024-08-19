@@ -7,7 +7,6 @@ export type GoodModel = {
     categoryId: string,
     createTime: string,
     updateTime: string,
-
 };
 export type GoodListParam = {
     goodName: string,

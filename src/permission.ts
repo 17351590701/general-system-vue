@@ -2,7 +2,7 @@ import router from "@/router"
 import { useUserStore } from "@/stores/user";
 import { useMenuStore } from "@/stores/menu";
 // 定义不需要验证的路径白名单
-const whiteList = ['/login','/404','/files/**']
+const whiteList = ['/register','/login','/404','/files/**']
 
 // 路由全局前置守卫
 router.beforeEach(async (to, from, next) => {

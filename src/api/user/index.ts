@@ -30,8 +30,8 @@ export const loginApi = (param:Login) => {
     return request.post("/api/sysUser/login", param)
 }
 //退出登录
-export const loginOutApi=()=>{
-    return request.post("/api/sysUser/loginOUt")
+export const logoutApi=()=>{
+    return request.post("/api/sysUser/logout")
 }
 //查询菜单树
 export const getAssignTreeApi = (param:AssignParam) => {
@@ -51,10 +51,13 @@ export const shopCartApi=(param:shopModel)=>{
 }
 //查询所有购物车商品信息
 export const shopCartListApi=(param:shopListModel)=>{
-    console.log(param);
     return request.get("/api/sysUser/getShopList",param)
 }
 //退单，根据uesrId和goodId删除
 export const cancelApi=(param:shopModel)=>{
     return request.post("/api/sysUser/cancel",param)
+}
+// 获取验证码
+export const getCaptchaImage = ()=>{
+    return request.get("/api/sysUser/getImage")
 }

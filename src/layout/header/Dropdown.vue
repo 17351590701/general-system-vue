@@ -9,7 +9,7 @@
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item @click="updateBtn">修改密码</el-dropdown-item>
-        <el-dropdown-item v-if="userStore.getUserId != ''" @click="loginOut">退出登录</el-dropdown-item>
+        <el-dropdown-item v-if="userStore.getUserId != ''" @click="logout">退出登录</el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
@@ -37,7 +37,7 @@ import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
 import {ElMessage, type FormInstance} from "element-plus";
 import {ref, reactive} from "vue";
-import {updatePasswordApi, loginOutApi} from "@/api/user";
+import {updatePasswordApi, logoutApi} from "@/api/user";
 import {useRouter} from "vue-router";
 import {useUserStore} from "@/stores/user";
 import useInstance from '@/hooks/useInstance';
@@ -121,11 +121,11 @@ function toLogin() {
 }
 
 //退出登录
-async function loginOut() {
+async function logout() {
   //信息确定
   const confirm = await global.$myConfirm('确定退出登录吗？')
   if (confirm) {
-    let res = await loginOutApi()
+    let res = await logoutApi()
     if (res && res.code == 200) {
       //清空缓存
       localStorage.clear()

@@ -35,6 +35,7 @@ import { shopCartListApi } from '@/api/user';
 import { useUserStore } from '@/stores/user';
 import { cancelApi } from '@/api/user';
 import { ElMessage } from 'element-plus';
+import type { shopModel } from '@/api/good/GoodModel';
 
 const userStore = useUserStore()
 const shopParam = reactive({
@@ -54,11 +55,14 @@ async function getList() {
 }
 //取消订单
 async function Cancel(goodId: string) {
-  console.log("用户id");
-  console.log(userStore.getUserId);
-  console.log("商品id");
-  console.log(goodId);
-  let res = await cancelApi({ userId: userStore.getUserId, goodId: goodId })
+  let requestParam = <shopModel>{
+    userId: userStore.getUserId,
+    goodId: goodId,
+    buyNum: 0,
+    sum: 0,
+    address: ''
+  }
+  let res = await cancelApi(requestParam)
   if (res && res.code == 200) {
     ElMessage.success("取消成功")
     //刷新

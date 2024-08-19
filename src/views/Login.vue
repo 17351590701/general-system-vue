@@ -15,10 +15,11 @@
               <el-input v-model="loginModel.password" show-password prefix-icon="lock" placeholder="请输入密码"
                 style="width: 95%;"></el-input>
             </el-form-item>
-
+            <!-- 验证码 -->
             <el-form-item prop="code">
               <el-input v-model="loginModel.code" placeholder="请输入验证码" style="width: 70%;"></el-input>
-              <img :src="imageUrl" alt="验证码" style="width: 50px;height: 30px;margin-left: 15px;" @click="refreshCode">
+              <img :src="captchaImageUrl" alt="限流" style="width: 50px;height: 30px;margin-left: 15px;"
+                @click="refreshCode">
             </el-form-item>
 
             <el-form-item>
@@ -32,11 +33,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { ElMessage, type FormInstance } from 'element-plus';
 import { loginApi } from '@/api/user'
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import request from '@/http/index'
+import { getCaptchaImage } from '@/api/user';
+import axios from 'axios';
+
 //表单ref属性，用于表单验证
 const form = ref<FormInstance>()
 //表单绑定对象
@@ -44,6 +49,9 @@ const loginModel = reactive({
   username: '',
   password: '',
   code: '',
+  captchaId: computed(() => {
+    return captchaUuid.value
+  })
 })
 //获取用户信息
 const userStore = useUserStore()
@@ -93,17 +101,20 @@ const login = () => {
     }
   })
 }
+const captchaImageUrl = ref('');
+const captchaUuid = ref('');
 
-
-//验证码图片地址
-const imageUrl = ref("http://localhost:8080/api/sysUser/getImage")
-//刷新验证码
-const refreshCode = () => {
-  const date = new Date().getTime();
-  imageUrl.value = `http://localhost:8080/api/sysUser/getImage?time=${date}`;
-
-}
-
+const refreshCode = async () => {
+  let res = await axios.get('http://localhost:8888/api/sysUser/getImage', { responseType: 'json' });
+  if (res.data.msg == '获取成功') {
+    captchaUuid.value = res.data.data.captchaId;
+    captchaImageUrl.value = `data:image/png;base64,${res.data.data.image}`;
+  } else {
+    ElMessage.error(res.data.msg)
+  }
+};
+// 初始化获取一次验证码
+refreshCode();
 </script>
 
 <style scoped lang="scss">

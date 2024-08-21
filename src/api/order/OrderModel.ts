@@ -11,8 +11,14 @@ export type OrderModel={
 }
 // 订单查询参数
 export type OrderListParam = {
-    searchParam:string,
+    searchParam:String,
     currentPage:number,
     pageSize:number
     total:number
+}
+// TODO 请求查询购物车的参数 ShopCartDto
+export type ShopCartDto = {
+    userId:String,
+    currentPage:number,
+    pageSize:number
 }

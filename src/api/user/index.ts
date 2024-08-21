@@ -61,3 +61,7 @@ export const cancelApi=(param:shopModel)=>{
 export const getCaptchaImage = ()=>{
     return request.get("/api/sysUser/getImage")
 }
+// 获取当前用户余额
+export const getBalance = ()=>{
+    return request.get("/api/sysUser/getBalance")
+}

@@ -22,7 +22,7 @@
         <el-form :model="addModel" ref="addRef" :rules="rules" label-width="100px" size="default"
           style="height:290px;overflow:auto;">
           <el-form-item label="商品图片">
-            <el-upload action="http://localhost:8080/api/files/upload" :on-success="uploadImg">
+            <el-upload action="http://localhost:8888/api/files/upload" :on-success="uploadImg">
               <el-tooltip content="PNG,JPEG 文件小于 500KB" placement="right">
                 <el-button type="primary">点击上传/替换</el-button>
               </el-tooltip>
@@ -53,8 +53,8 @@
     <el-table :data="tableList" border stripe :heigth="tableHeight">
       <el-table-column label="商品图片" width="150">
         <template #default="scope">
-          <el-image style="width: 50px; height: 70px" :src="'http://localhost:8080/api/files/' + scope.row.pictureKey"
-            :preview-src-list="['http://localhost:8080/api/files/' + scope.row.pictureKey]" :preview-teleported="true">
+          <el-image style="width: 50px; height: 70px" :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
+            :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]" :preview-teleported="true">
           </el-image>
         </template>
       </el-table-column>
@@ -89,9 +89,9 @@
       </el-table-column>
     </el-table>
     <!-- 分页-->
-    <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="searchParam.currentPage"
-      :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize" layout="total, sizes, prev, pager, next, jumper"
-      :total="searchParam.total">
+    <el-pagination class="pagination" @size-change="sizeChange" @current-change="currentChange"
+      :current-page="searchParam.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize"
+      layout="total, sizes, prev, pager, next, jumper" :total="searchParam.total">
     </el-pagination>
     <!-- 筛选弹窗 -->
     <SysDialog :title="filterTitle" :visible="filterVisible" :width="500" :height="150" @on-close="filterClose"
@@ -114,7 +114,7 @@
       </template>
     </SysDialog>
     <!--商品购买弹框-->
-    <SysDialog :title="buyModel.title" :visible="buyModel.visible" :width="500" :height="300" @on-close="onCloseBuy"
+    <SysDialog :title="buyModel.title" :visible="buyModel.visible" :width="500" :height="300" @on-close="onCancelBuy"
       @on-confirm="onConfirmBuy">
       <template v-slot:content>
         <el-form :model="buyModel" ref="bugRef" label-width="100px" size="default" style="height:290px;overflow:auto;">
@@ -126,18 +126,28 @@
           </el-form-item>
           <el-form-item label="购买数量" prop="storeNum" style="width:230px;">
             <div style="width: 100%;height:100%;display: flex;justify-content: space-between ">
-              <el-button @click="buyModel.buyNum > 0 ? buyModel.buyNum-- : 0">-</el-button>
-              <el-input v-model="buyModel.buyNum" placeholder="单位:个" style="width: 40px"></el-input>
-              <el-button
-                @click="buyModel.buyNum < buyModel.storeNum ? buyModel.buyNum++ : buyModel.storeNum">+</el-button>
+              <el-input-number v-model="buyModel.buyNum" :min="0" :max="buyModel.storeNum" />
             </div>
           </el-form-item>
           <el-form-item label="配送地址" prop="address" style="width:400px">
-            <el-input v-model="buyModel.address" placeholder="请填写详细家庭住址"></el-input>
+            <el-input v-model="buyModel.address" type="textarea" style="width: 100%" :rows="3"
+              placeholder="请填写详细家庭住址"></el-input>
           </el-form-item>
         </el-form>
       </template>
     </SysDialog>
+    <!-- 购买商品，二次确认，不管是否支付，都生成订单 -->
+    <el-dialog v-model="twiceConfirmDialog" title="支付界面" width="500" >
+      <span>您当前的余额为:1000,是否确认购买</span>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button>Cancel</el-button>
+          <el-button type="primary">
+            Confirm
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </el-main>
 </template>
 
@@ -146,7 +156,7 @@ import { ref, reactive, onMounted, nextTick, computed, watch, watchEffect } from
 import SysDialog from '@/components/SysDialog.vue'
 import useDialog from '@/hooks/useDialog'
 import { getListApi, addGoodApi, deleteGoodApi, editGoodApi, getCategoryListApi, getGoodConditionApi } from '@/api/good'
-import { shopCartApi } from '@/api/user'
+import { shopCartApi, getBalance } from '@/api/user'
 import { getSelectApi } from '@/api/category'
 import { type FormInstance, ElMessage } from 'element-plus';
 import type { GoodModel } from '@/api/good/GoodModel';
@@ -159,6 +169,7 @@ import { useUserStore } from '@/stores/user';
 import { addOrderApi } from '@/api/order';
 
 
+const twiceConfirmDialog = ref(false)
 const userStore = useUserStore()
 const { global } = useInstance()
 const { dialog, onClose, onConfirm, onShow } = useDialog()
@@ -308,6 +319,8 @@ const tableList = ref([])
 async function getList() {
   let res = await getListApi(searchParam)
   if (res && res.code == 200) {
+    console.log(res.data);
+
     tableList.value = res.data.records
     searchParam.total = res.data.total
   }
@@ -410,13 +423,18 @@ function buyBtn(goodId: string, goodName: string, price: number, storeNum: numbe
   buyModel.price = price;
   buyModel.storeNum = storeNum
 }
-// 关闭购买弹框并重置购买参数
+/* 
+*关闭购买弹框并重置购买参数
+*将 订单状态变为0，同时也向后端提交
+ */
 const onCloseBuy = () => {
   buyModel.buyNum = 0;
   buyModel.address = ''
   buyModel.visible = false
 }
-// 提交购买清单
+/* 
+*提交订单：假设完成了付款，将订单状态变为：1
+ */
 const onConfirmBuy = async () => {
   // 构造请求对象
   let orderParam = {
@@ -428,7 +446,30 @@ const onConfirmBuy = async () => {
     buyNum: buyModel.buyNum,
     sum: buyModel.sum,
     address: buyModel.address,
-    status: buyModel.status
+    status: 1
+  }
+  let res = await addOrderApi(orderParam)
+  if (res && res.code == 200) {
+    ElMessage.success(res.msg)
+  }
+  // 刷新列表
+  getList();
+  // 关闭购买弹框
+  onCloseBuy()
+}
+//如果取消了订单，也生成订单，但不真正执行逻辑，即不算付款
+const onCancelBuy = async () => {
+  // 构造请求对象
+  let orderParam = {
+    orderId: '',
+    userId: userStore.getUserId,
+    nickName: userStore.getNickName,
+    goodId: buyModel.goodId,
+    goodName: buyModel.goodName,
+    buyNum: buyModel.buyNum,
+    sum: buyModel.sum,
+    address: buyModel.address,
+    status: 0
   }
   let res = await addOrderApi(orderParam)
   if (res && res.code == 200) {
@@ -461,4 +502,8 @@ onMounted(() => {
 
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.pagination {
+  margin-top: 20px;
+}
+</style>

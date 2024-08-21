@@ -8,8 +8,8 @@
     <el-table :data="tableList" border stripe style="height: 530px;">
       <el-table-column label="商品图片" width="250">
         <template #default="scope">
-          <el-image style="width: 50px; height: 70px" :src="'http://localhost:8080/api/files/' + scope.row.pictureKey"
-            :preview-src-list="['http://localhost:8080/api/files/' + scope.row.pictureKey]" :preview-teleported="true">
+          <el-image style="width: 50px; height: 70px" :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
+            :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]" :preview-teleported="true">
           </el-image>
         </template>
       </el-table-column>
@@ -49,6 +49,7 @@ const tableList = ref([])
 async function getList() {
   let res = await shopCartListApi(shopParam)
   if (res && res.code == 200) {
+    console.log(res.data);
     tableList.value = res.data.records
     shopParam.total = res.data.total
   }

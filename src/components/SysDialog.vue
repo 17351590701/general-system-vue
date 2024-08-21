@@ -5,6 +5,7 @@
   :width="props.width" 
   :before-close="onClose"
   :close-on-click-modal="false"
+  :show-close=false
   appened-to-body
   >
     <!-- 展示弹框内容 -->

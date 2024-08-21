@@ -11,7 +11,8 @@
       <el-form-item>
         <el-button v-if="global.$hasPerm(['sys:category:search'])" icon="Search" @click="searchBtn">搜索</el-button>
         <el-button icon="Close" type="danger" @click="resetBtn">清空</el-button>
-        <el-button v-if="global.$hasPerm(['sys:category:add'])" icon="Plus" type="primary" @click="addBtn">新增</el-button>
+        <el-button v-if="global.$hasPerm(['sys:category:add'])" icon="Plus" type="primary"
+          @click="addBtn">新增</el-button>
       </el-form-item>
     </el-form>
 
@@ -37,18 +38,20 @@
     <el-table :data="tableList" border stripe :height="tableHeight">
       <el-table-column prop="categoryName" label="商品类型"></el-table-column>
       <el-table-column prop="remark" label="类型描述"></el-table-column>
-      <el-table-column v-if="global.$hasPerm(['sys:category:edit','sys:category:delete'])" label="操作">
+      <el-table-column v-if="global.$hasPerm(['sys:category:edit', 'sys:category:delete'])" label="操作">
         <template #default="scope">
-          <el-button v-if="global.$hasPerm(['sys:category:edit'])" size="default" type="primary" icon="Edit" @click="editBtn(scope.row)">编辑</el-button>
-          <el-button v-if="global.$hasPerm(['sys:category:delete'])" size="default" type="danger" icon="Delete" @click="deleteBtn(scope.row.categoryId)">删除</el-button>
+          <el-button v-if="global.$hasPerm(['sys:category:edit'])" size="default" type="primary" icon="Edit"
+            @click="editBtn(scope.row)">编辑</el-button>
+          <el-button v-if="global.$hasPerm(['sys:category:delete'])" size="default" type="danger" icon="Delete"
+            @click="deleteBtn(scope.row.categoryId)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <!-- 分页-->
-    <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="searchParam.currentPage"
-      :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize" layout="total, sizes, prev, pager, next, jumper"
-      :total="searchParam.total">
+    <el-pagination class="pagination" @size-change="sizeChange" @current-change="currentChange"
+      :current-page="searchParam.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize"
+      layout="total, sizes, prev, pager, next, jumper" :total="searchParam.total">
     </el-pagination>
   </el-main>
 </template>
@@ -83,12 +86,12 @@ const addRef = ref<FormInstance>()
 const rules = reactive({
   categoryName: [{
     required: true,
-    trigger: ['blur','change'],
+    trigger: ['blur', 'change'],
     message: '请输入商品类型名',
   }],
   remark: [{
     required: true,
-    trigger: ['blur','change'],
+    trigger: ['blur', 'change'],
     message: '请输入商品类型描述',
   }],
 })
@@ -197,4 +200,8 @@ onMounted(() => {
 
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.pagination {
+  margin-top: 20px;
+}
+</style>

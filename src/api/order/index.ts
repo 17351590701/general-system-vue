@@ -1,5 +1,5 @@
 import request from "@/http";
-import type { OrderModel, OrderListParam } from "./OrderModel";
+import type { OrderModel, OrderListParam,ShopCartDto } from "./OrderModel";
 // 新增订单：在商品页面，购买商品，生成订单
 export const addOrderApi = (param: OrderModel) => {
   return request.post("/api/sysOrder/addOrder", param);
@@ -22,3 +22,8 @@ export const getOrderListApi = (param: OrderListParam) => {
 export const getOrderSuggestion = (inputKey: String) => {
   return request.get("/api/sysOrder/suggest", { inputKey: inputKey });
 };
+
+// 显示购物车：查询订单联合商品表，商品图片，显示订单状态
+export const getShopCartListAPi = (shopCartDto:ShopCartDto)=>{
+  return request.get("/api/sysOrder/getShopCartList",shopCartDto)
+}

@@ -7,13 +7,14 @@
         </div>
       </template>
       <p style="margin-bottom: 50px;">商品分类统计（商品可能含有多个分类）</p>
-      <div ref="myChartRef" :style="{ width: '400px', height: '300px'}"></div>
+      <div ref="myChartRef" :style="{ width: '400px', height: '300px' }"></div>
     </el-card>
     <div class="log">
 
     </div>
     <div class="shop">
-      <ShoppingCart></ShoppingCart>
+      <!-- <ShoppingCart></ShoppingCart> -->
+      <ShopCart></ShopCart>
     </div>
   </div>
 </template>
@@ -21,7 +22,8 @@
 <script setup lang="ts">
 import { nextTick, onMounted, reactive, ref } from "vue";
 import useInstance from '@/hooks/useInstance'
-import ShoppingCart from "@/views/system/User/ShoppingCart.vue";
+// import ShoppingCart from "@/views/system/User/ShoppingCart.vue";
+import ShopCart from "@/components/ShopCart.vue";
 import { getEchartsApi } from "@/api/category";
 
 const { global } = useInstance()

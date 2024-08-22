@@ -17,10 +17,10 @@
     </el-form>
     <!-- 新增编辑弹窗 -->
     <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
-      @on-close="onClose" @on-confirm="commit">
+               @on-close="onClose" @on-confirm="commit">
       <template v-slot:content>
         <el-form :model="addModel" ref="addRef" :rules="rules" label-width="100px" size="default"
-          style="height:290px;overflow:auto;">
+                 style="height:290px;overflow:auto;">
           <el-form-item label="商品图片">
             <el-upload action="http://localhost:8888/api/files/upload" :on-success="uploadImg">
               <el-tooltip content="PNG,JPEG 文件小于 500KB" placement="right">
@@ -34,11 +34,12 @@
           <el-form-item label="商品类别">
             <!--复选框-->
             <SelectChecked :bindValue="bindValue" ref="selectRef" :options="options" @selected="selected"
-              style="width:200px">
+                           style="width:200px">
             </SelectChecked>
           </el-form-item>
           <el-form-item label="商品描述" prop="description">
-            <el-input v-model="addModel.description" type="textarea" placeholder="请输入商品相关描述" style="width: 400px" />
+            <el-input v-model="addModel.description" type="textarea" placeholder="请输入商品相关描述"
+                      style="width: 400px"/>
           </el-form-item>
           <el-form-item label="商品价格" prop="price" style="width:300px">
             <el-input v-model="addModel.price" placeholder="单位:元"></el-input>
@@ -53,8 +54,10 @@
     <el-table :data="tableList" border stripe :heigth="tableHeight">
       <el-table-column label="商品图片" width="150">
         <template #default="scope">
-          <el-image style="width: 50px; height: 70px" :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
-            :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]" :preview-teleported="true">
+          <el-image style="width: 100px; height: 80px;border-radius: 10px"
+                    :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
+                    :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]"
+                    :preview-teleported="true">
           </el-image>
         </template>
       </el-table-column>
@@ -76,31 +79,32 @@
       </el-table-column>
       <el-table-column v-if="global.$hasPerm(['sys:good:edit', 'sys:good:delete'])" label="操作" align="center">
         <template #default="scope">
-          <el-button icon="Select" type="default" size="default"
-            @click="buyBtn(scope.row.goodId, scope.row.goodName, scope.row.price, scope.row.storeNum)">购买
+          <el-button icon="Select" size="default"
+                     @click="buyBtn(scope.row.goodId, scope.row.goodName, scope.row.price, scope.row.storeNum)">购买
           </el-button>
           <el-button v-if="global.$hasPerm(['sys:good:edit'])" type="primary" size="default" icon="Edit"
-            @click="editBtn(scope.row)">编辑
+                     @click="editBtn(scope.row)">编辑
           </el-button>
           <el-button v-if="global.$hasPerm(['sys:good:delete'])" type="danger" size="default" icon="Delete"
-            @click="deleteBtn(scope.row.goodId)">删除
+                     @click="deleteBtn(scope.row.goodId)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页-->
     <el-pagination class="pagination" @size-change="sizeChange" @current-change="currentChange"
-      :current-page="searchParam.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize"
-      layout="total, sizes, prev, pager, next, jumper" :total="searchParam.total">
+                   :current-page="searchParam.currentPage" :page-sizes="[10, 20, 30, 40]"
+                   :page-size="searchParam.pageSize"
+                   layout="total, sizes, prev, pager, next, jumper" :total="searchParam.total">
     </el-pagination>
     <!-- 筛选弹窗 -->
     <SysDialog :title="filterTitle" :visible="filterVisible" :width="500" :height="150" @on-close="filterClose"
-      @on-show="filterShow" @on-confirm="filterConfirm">
+               @on-show="filterShow" @on-confirm="filterConfirm">
       <template v-slot:content>
         <el-form :model="filterModel" label-width="80px" :inline="false" size="default">
           <el-form-item label="商品类别">
             <el-select v-model="filterValueOptions" multiple placeholder="请选择商品类别" style="width:300px"
-              @change="filterChange">
+                       @change="filterChange">
               <el-option v-for="item in filterOptions" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -115,7 +119,7 @@
     </SysDialog>
     <!--商品购买弹框-->
     <SysDialog :title="buyModel.title" :visible="buyModel.visible" :width="500" :height="300" @on-close="onCancelBuy"
-      @on-confirm="onConfirmBuy">
+               @on-confirm="onConfirmBuy">
       <template v-slot:content>
         <el-form :model="buyModel" ref="bugRef" label-width="100px" size="default" style="height:290px;overflow:auto;">
           <el-form-item label="商品名称" prop="goodName" style="width:300px">
@@ -126,24 +130,26 @@
           </el-form-item>
           <el-form-item label="购买数量" prop="storeNum" style="width:230px;">
             <div style="width: 100%;height:100%;display: flex;justify-content: space-between ">
-              <el-input-number v-model="buyModel.buyNum" :min="0" :max="buyModel.storeNum" />
+              <el-input-number v-model="buyModel.buyNum" :min="0" :max="buyModel.storeNum"/>
             </div>
           </el-form-item>
           <el-form-item label="配送地址" prop="address" style="width:400px">
             <el-input v-model="buyModel.address" type="textarea" style="width: 100%" :rows="3"
-              placeholder="请填写详细家庭住址"></el-input>
+                      placeholder="请填写详细家庭住址"></el-input>
           </el-form-item>
         </el-form>
       </template>
     </SysDialog>
     <!-- 购买商品，二次确认，不管是否支付，都生成订单 -->
-    <el-dialog v-model="twiceConfirmDialog" title="支付界面" width="500" >
-      <span>您当前的余额为:1000,是否确认购买</span>
+    <el-dialog v-model="twiceConfirmDialog" title="支付界面" width="550" top="30vh" center draggable
+               align-center>
+      <p>您当前的余额为: <span style="color:royalblue;font-size: 15px">{{ userBalance }}</span> 元</p>
+      <p>商品总价: <span style="color: brown;font-size:15px">{{ buyModel.sum }}</span> 元</p>
       <template #footer>
         <div class="dialog-footer">
-          <el-button>Cancel</el-button>
-          <el-button type="primary">
-            Confirm
+          <el-button @click="twiceCancel">取消支付</el-button>
+          <el-button type="primary" @click="twiceConfirm">
+            确认支付
           </el-button>
         </div>
       </template>
@@ -152,27 +158,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick, computed, watch, watchEffect } from 'vue';
+import {ref, reactive, onMounted, nextTick, computed, watch, watchEffect, h} from 'vue';
 import SysDialog from '@/components/SysDialog.vue'
 import useDialog from '@/hooks/useDialog'
-import { getListApi, addGoodApi, deleteGoodApi, editGoodApi, getCategoryListApi, getGoodConditionApi } from '@/api/good'
-import { shopCartApi, getBalance } from '@/api/user'
-import { getSelectApi } from '@/api/category'
-import { type FormInstance, ElMessage } from 'element-plus';
-import type { GoodModel } from '@/api/good/GoodModel';
+import {getListApi, addGoodApi, deleteGoodApi, editGoodApi, getCategoryListApi, getGoodConditionApi} from '@/api/good'
+import {shopCartApi, getBalance} from '@/api/user'
+import {getSelectApi} from '@/api/category'
+import {type FormInstance, ElMessage, ElNotification} from 'element-plus';
+import type {GoodModel} from '@/api/good/GoodModel';
 import useInstance from '@/hooks/useInstance';
 import SelectChecked from "@/components/SelectChecked.vue";
-import { getRoleListApi } from "@/api/user";
-import type { List } from 'echarts';
-import { type shopModel } from '@/api/good/GoodModel';
-import { useUserStore } from '@/stores/user';
-import { addOrderApi } from '@/api/order';
+import type {List} from 'echarts';
+import {type shopModel} from '@/api/good/GoodModel';
+import {useUserStore} from '@/stores/user';
+import {addOrderApi} from '@/api/order';
 
 
-const twiceConfirmDialog = ref(false)
 const userStore = useUserStore()
-const { global } = useInstance()
-const { dialog, onClose, onConfirm, onShow } = useDialog()
+const {global} = useInstance()
+const {dialog, onClose, onConfirm, onShow} = useDialog()
 const searchParam = reactive({
   goodName: '',
   description: '',
@@ -412,8 +416,11 @@ const filterChange = () => {
 //图片文件上传成功后
 function uploadImg(res: any) {
   addModel.pictureKey = res.msg;
-
 }
+
+// 购买商品的二次确认框
+const twiceConfirmDialog = ref(false)
+
 
 // 显示购买弹框，并传递参数
 function buyBtn(goodId: string, goodName: string, price: number, storeNum: number) {
@@ -423,19 +430,28 @@ function buyBtn(goodId: string, goodName: string, price: number, storeNum: numbe
   buyModel.price = price;
   buyModel.storeNum = storeNum
 }
+
 /* 
-*关闭购买弹框并重置购买参数
-*将 订单状态变为0，同时也向后端提交
- */
-const onCloseBuy = () => {
-  buyModel.buyNum = 0;
-  buyModel.address = ''
-  buyModel.visible = false
-}
-/* 
-*提交订单：假设完成了付款，将订单状态变为：1
+*第一次购买商品确认框，查询余额，显示二次确认框
  */
 const onConfirmBuy = async () => {
+  userBalance.value = (await getBalance()).data
+
+  // 显示二次弹框
+  twiceConfirmDialog.value = true;
+}
+const userBalance = ref("");
+// 二次确认框
+const twiceConfirm = async () => {
+  if (buyModel.sum > userBalance.value) {
+    ElNotification.error({
+      title: '余额不足',
+      message: '余额不足，请充值',
+      showClose: false,
+      duration: 3000
+    })
+    return
+  }
   // 构造请求对象
   let orderParam = {
     orderId: '',
@@ -454,11 +470,20 @@ const onConfirmBuy = async () => {
   }
   // 刷新列表
   getList();
-  // 关闭购买弹框
+  // 关闭两个弹框
+  twiceConfirmDialog.value = false;
   onCloseBuy()
 }
-//如果取消了订单，也生成订单，但不真正执行逻辑，即不算付款
-const onCancelBuy = async () => {
+// 二次取消，如果取消了订单，也生成订单，但不真正执行逻辑，即不算付款
+const twiceCancel = async () => {
+  // 如果无库存，不生成未支付订单
+  if (buyModel.storeNum <= 0) {
+    // 关闭两个弹框
+    twiceConfirmDialog.value = false;
+    onCloseBuy()
+    // 直接返回
+    return;
+  }
   // 构造请求对象
   let orderParam = {
     orderId: '',
@@ -473,12 +498,33 @@ const onCancelBuy = async () => {
   }
   let res = await addOrderApi(orderParam)
   if (res && res.code == 200) {
-    ElMessage.success(res.msg)
+    let msg = String(res.msg)
+    ElNotification.success({
+      title: '购物车通知',
+      message: msg,
+      showClose: false,
+      duration: 3000
+    })
   }
   // 刷新列表
   getList();
-  // 关闭购买弹框
+  // 关闭两个弹框
+  twiceConfirmDialog.value = false;
   onCloseBuy()
+}
+
+// 第一次取消购买，什么也不做，重置
+const onCancelBuy = async () => {
+  twiceConfirmDialog.value = false;
+  onCloseBuy()
+}
+/* 
+*关闭购买界面第一次弹框方法
+ */
+const onCloseBuy = () => {
+  buyModel.buyNum = 1;
+  buyModel.address = ''
+  buyModel.visible = false
 }
 
 //页容量改变时触发

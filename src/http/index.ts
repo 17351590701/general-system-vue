@@ -161,15 +161,6 @@ class request {
   delete<T = Result>(url: string): Promise<T> {
     return this.instance.delete(url);
   }
-
-  //图片上传
-  // upload<T = Result>(url: string, params?: object): Promise<T> {
-  //     return this.instance.post(url, params, {
-  //         headers: {
-  //             'Content-Type': 'multipart/form-data'
-  //         }
-  //     })
-  // }
 }
 
 export default new request(config);

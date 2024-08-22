@@ -3,7 +3,7 @@
         <!-- 搜索框 -->
         <el-form-item :inline="true">
             <el-autocomplete v-model="inputKey" :fetch-suggestions="querySearch" placeholder="请输入用户名、商品名、收货地址进行搜索..."
-                debounce style="width: 700px;" :handleKeyEnter="getOrderList" @keydown.enter.native="getOrderList" />
+                             debounce="300" style="width: 700px;" :handleKeyEnter="getOrderList" @keydown.enter.native="getOrderList" />
             <el-button style="margin-left: 20px;" icon="Search" @click="getOrderList">搜索</el-button>
             <el-button style="margin-left: 10px;" icon="Close" type="danger" @click="resetBtn">清空</el-button>
         </el-form-item>
@@ -56,11 +56,11 @@
             :total="orderListParam.total">
         </el-pagination>
         <!-- 编辑框 -->
-        <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
-            @on-close="onClose" @on-confirm="commmitOrder">
+        <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="580"
+            @on-close="onClose" @on-confirm="commitOrder" top="3vh">
             <template v-slot:content>
                 <el-form :model="orderModel" ref="addRef" :rules="rules" label-width="100px" size="default"
-                    style="height:500px;overflow:auto;">
+                    style="height:580px;overflow:auto;">
                     <el-form-item label="订单id" prop="orderId" style="width:90%">
                         <el-input v-model="orderModel.orderId" disabled></el-input>
                     </el-form-item>
@@ -82,8 +82,9 @@
                     <el-form-item label="总金额" prop="sum" style="width:90%">
                         <el-input v-model="orderModel.sum" placeholder="单位:元"></el-input>
                     </el-form-item>
-                    <el-form-item label="收货地址" prop="address" style="width:90%">
-                        <el-input v-model="orderModel.address" type="textarea" style="width: 100%" :rows="3"
+                    <el-form-item label="收货地址" prop="address" style="width:90%" >
+                        <el-input v-model="orderModel.address" type="textarea" style="width: 100%" resize="none"
+                                  :autosize="{ minRows: 2, maxRows: 4 }"
                             placeholder="填写详细收货地址"></el-input>
                     </el-form-item>
                     <el-form-item label="订单状态" prop="status" style="width:90%">
@@ -202,7 +203,7 @@ const editBtn = async (row: any) => {
 }
 
 // 提交编辑信息
-const commmitOrder = async () => {
+const commitOrder = async () => {
     // 传递参数时，排除其他字段，如时间、补全建议等
     let modelWithoutTime = {
         orderId: orderModel.orderId,
@@ -225,7 +226,6 @@ const commmitOrder = async () => {
         // 流畅刷新功能
         setTimeout(() => {
             onClose()
-
         }, 500)
     } else {
         ElMessage.error(res.msg)

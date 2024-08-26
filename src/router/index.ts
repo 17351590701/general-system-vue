@@ -20,16 +20,7 @@ export const constantRoutes: Array<RouteRecordRaw> = [
           title: "首页",
           icon: "House",
         },
-      },
-      {
-        path: "/shopping",
-        component: () => import("@/views/system/User/ShoppingCart.vue"),
-        name: "shopping",
-        meta: {
-          title: "购物车",
-          icon: "ShoppingCart",
-        },
-      },
+      }
     ],
   },
   {

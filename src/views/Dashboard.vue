@@ -5,7 +5,6 @@
       <GoodEcharts></GoodEcharts>
     </div>
     <div class="shop">
-      <!-- <ShoppingCart></ShoppingCart> -->
       <ShopCart></ShopCart>
     </div>
   </div>
@@ -29,6 +28,7 @@ import VisitorTraffic from "@/components/VisitorTraffic.vue";
     flex: 2;
     box-sizing: border-box;
     width: 600px;
+    height: 100%;
   }
 
   .echart {

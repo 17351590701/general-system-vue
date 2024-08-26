@@ -13,7 +13,6 @@
 <script lang="ts" setup>
 import { nextTick, onMounted, reactive, ref } from "vue";
 import useInstance from '@/hooks/useInstance'
-// import ShoppingCart from "@/views/system/User/ShoppingCart.vue";
 import ShopCart from "@/components/ShopCart.vue";
 import { getEchartsApi } from "@/api/category";
 

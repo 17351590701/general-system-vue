@@ -10,9 +10,8 @@
       <el-table-column label="商品图片" width="150">
         <template #default="scope">
           <el-image style="width: 90px; height: 70px;border-radius: 10px"
-                    :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
-                    :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]"
-                    :preview-teleported="true">
+            :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
+            :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]" :preview-teleported="true">
           </el-image>
         </template>
       </el-table-column>
@@ -35,8 +34,8 @@
     </el-table>
     <!-- 分页-->
     <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="shopCartParam.currentPage"
-                   :page-sizes="[10, 20, 30, 40]" :page-size="shopCartParam.pageSize"
-                   layout="total, sizes, prev, pager, next, jumper" :total="shopCartParam.total">
+      :page-sizes="[10, 20, 30, 40]" :page-size="shopCartParam.pageSize"
+      layout="total, sizes, prev, pager, next, jumper" :total="shopCartParam.total">
     </el-pagination>
   </el-card>
   <!-- 商品订单详情弹框 -->
@@ -44,10 +43,11 @@
     <el-row style="height: 320px">
       <el-col :span="9">
         <el-form-item label="">
-          <el-image style="width: 230px; height: 280px;border-radius: 10px;border: #324152 2px solid;box-shadow: #b2b2b2 2px 2px 1px 1px;"
-                    :src="'http://localhost:8888/api/files/' + shopCartGood.pictureKey"
-                    :preview-src-list="['http://localhost:8888/api/files/' + shopCartGood.pictureKey]"
-                    :preview-teleported="true">
+          <el-image
+            style="width: 230px; height: 280px;border-radius: 10px;border: #324152 2px solid;box-shadow: #b2b2b2 2px 2px 1px 1px;"
+            :src="'http://localhost:8888/api/files/' + shopCartGood.pictureKey"
+            :preview-src-list="['http://localhost:8888/api/files/' + shopCartGood.pictureKey]"
+            :preview-teleported="true">
           </el-image>
         </el-form-item>
       </el-col>
@@ -63,43 +63,53 @@
         </el-form-item>
         <el-form-item label="购买数量:" label-width="90px">
           <el-input-number v-model="shopCartGood.buyNum" :min="0" :max="shopCartGood.stock"
-                           :disabled="getBoolean"></el-input-number>
+            :disabled="getBoolean"></el-input-number>
         </el-form-item>
         <el-form-item label="收货地址:" label-width="90px">
           <el-input v-model="shopCartGood.address" type="textarea" resize="none" :disabled="getBoolean"
-                    :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+            :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="总计:" label-width="90px" style="float: right;margin-top:30px;font-size: 20px;">
           <span style="font-size: 20px;color: orangered;font-weight: bold">{{
-              formatPrice(shopCartGood.price * shopCartGood.buyNum)
-            }}</span>
+            formatPrice(shopCartGood.price * shopCartGood.buyNum)
+          }}</span>
         </el-form-item>
       </el-col>
     </el-row>
+    <!-- 下滚评论区 -->
     <div class="scoreComments" style="width: 100%; margin-top: 20px">
       <el-divider content-position="left">买家评价</el-divider>
       <ul class="infinite-list" style="overflow: auto">
         <li v-for="(comment, index) in shopCartGood.allComments" :key="index" class="infinite-list-item">
-          {{ comment }}
+          <div>
+            <div>{{ comment.nickName }}</div>
+            <div>
+              {{ comment.comments }}
+            </div>
+          </div>
         </li>
       </ul>
     </div>
     <template #footer>
       <el-row justify="end">
         <!-- 已收货后可评价 -->
-        <el-button type="danger" v-if="shopCartGood.status === 5">去评价</el-button>
-        <!-- 未支付和已取消的订单可以删除 -->
-        <el-button type="primary" @click="shopCartDelete"
-                   v-if="shopCartGood.status === 0 || shopCartGood.status === 6||shopCartGood.status === 8 || shopCartGood.status === 10">
-          删除订单
+        <el-button type="danger" plain @click="commentDialog" v-if="shopCartGood.status === 5">
+          去评价
         </el-button>
+        <!-- 未支付/已收货、和已取消的订单可以删除 -->
+        <el-popconfirm title="确认删除该订单信息吗?" width="210px" @confirm="shopCartDelete">
+          <template #reference>
+            <el-button type="primary" plain
+              v-if="shopCartGood.status === 0 || shopCartGood.status === 5 || shopCartGood.status === 6 || shopCartGood.status === 8 || shopCartGood.status === 10">
+              删除订单
+            </el-button>
+          </template>
+        </el-popconfirm>
         <!-- 其他订单状态：结算 退款 -->
-        <el-button type="primary" @click="shopCartPay"
-                   v-if="shopCartGood.status === 0">
+        <el-button type="primary" plain @click="shopCartPay" v-if="shopCartGood.status === 0">
           去结算
         </el-button>
-        <el-popconfirm title="请确保您已经收到了货物?" width="250px" @confirm="confirmReceive"
-                       v-if="shopCartGood.status===1">
+        <el-popconfirm title="请确保您已经收到了货物?" width="250px" @confirm="confirmReceive" v-if="shopCartGood.status === 1">
           <template #reference>
             <el-button type="warning" plain>
               确认收货
@@ -107,20 +117,45 @@
           </template>
         </el-popconfirm>
         <el-button type="primary" plain
-                   v-if="shopCartGood.status === 1 || shopCartGood.status === 2 || shopCartGood.status === 3 || shopCartGood.status === 4 || shopCartGood.status === 5">
+          v-if="shopCartGood.status === 1 || shopCartGood.status === 2 || shopCartGood.status === 3 || shopCartGood.status === 4 || shopCartGood.status === 5">
           去退货/退款
         </el-button>
       </el-row>
     </template>
   </el-dialog>
-
+  <!--用户评价弹框-->
+  <el-dialog v-model="showCommentDialog" width="500" top="30vh" style="padding: 10px">
+    <template #title style="height: 20px;">
+      <p style="font-size: 15px;margin-top: 10px;margin-bottom: 0px;">用户评价
+        <el-tooltip effect="dark" content="您的评价内容在商品评价页面将会被匿名展示" placement="right-start">
+          <el-icon style="margin-left: 5px;font-size: 18px" color="#7f7f7f">
+            <QuestionFilled />
+          </el-icon>
+        </el-tooltip>
+      </p>
+    </template>
+    <el-form label-width="80px">
+      <el-form-item label="商品星级:">
+        <el-rate style="margin-left: 10px" v-model="shopCartGood.starRate" :texts="['非常差', '差', '一般', '好', '非常好']"
+          show-text size="large" />
+      </el-form-item>
+      <el-form-item label="商品评价:">
+        <el-input type="textarea" v-model="shopCartGood.comments" resize="none"
+          :autosize="{ minRows: 3, maxRows: 5 }"></el-input>
+      </el-form-item>
+      <el-form-item label-width="320">
+        <el-button type="danger" @click="cancelComment">取消</el-button>
+        <el-button type="primary" @click="submitComment">提交</el-button>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
-import {ref, reactive, onMounted, nextTick, computed} from 'vue'
-import {deleteOrderApi, getShopCartListAPi, shopCartPayApi, updateOrderApi} from '@/api/order';
-import {useUserStore} from '@/stores/user';
-import {ElMessage} from "element-plus";
+import { ref, reactive, onMounted, nextTick, computed } from 'vue'
+import { addCommentApi, deleteOrderApi, getShopCartListAPi, shopCartPayApi, updateOrderApi } from '@/api/order';
+import { useUserStore } from '@/stores/user';
+import { ElMessage } from "element-plus";
 
 const userStore = useUserStore()
 // 请求后端参数
@@ -131,8 +166,10 @@ const shopCartParam = reactive({
   total: 0
 })
 
-// 显示弹框
+// 显示订单详情弹框
 const showGoodDetails = ref(false)
+// 用户订单评价弹框
+const showCommentDialog = ref(false)
 // 商品订单回写提交数据
 const shopCartGood = reactive({
   orderId: '',
@@ -147,7 +184,10 @@ const shopCartGood = reactive({
   status: 0,
   starRate: 0,
   comments: '',
-  allComments: []
+  allComments: [{
+    "nickName": "",
+    "comments": ""
+  }]
 })
 //列表显示
 const tableList = ref([])
@@ -156,14 +196,14 @@ const getShopCartList = async () => {
   tableList.value = res.data.records
   shopCartParam.total = res.data.total
 }
-
+const shareRow = ref(null)
 const showDetails = (row: any) => {
   //  打开弹窗，显示订单商品详情
   showGoodDetails.value = true
-  // 数值回写
+  // 数值回写 
   Object.assign(shopCartGood, row)
   shopCartGood.allComments = row.allComments
-  console.log(shopCartGood)
+
 }
 
 // 总计金额保留两位小数
@@ -255,7 +295,6 @@ const shopCartPay = async () => {
     address: shopCartGood.address,
     status: 1,
   }
-  console.log(payParam)
   let res = await shopCartPayApi(payParam)
   if (res.code === 200) {
     ElMessage.success(res.msg)
@@ -269,7 +308,7 @@ const shopCartPay = async () => {
 }
 /* 用户手动收货 */
 const confirmReceive = async () => {
-// 相当于修改订单，只修改状态为已收货，提交后端，刷新列表
+  // 相当于修改订单，只修改状态为已收货，提交后端，刷新列表
   let modelWithoutTime = {
     orderId: shopCartGood.orderId,
     userId: userStore.getUserId,
@@ -287,10 +326,41 @@ const confirmReceive = async () => {
     //  刷新列表关闭弹框
     await getShopCartList();
     showGoodDetails.value = false
-  }else{
+  } else {
     ElMessage.error(res.msg)
   }
 }
+/* 用户评价评论弹框 */
+const commentDialog = () => {
+  showCommentDialog.value = true
+}
+
+// 取消评价
+const cancelComment = () => {
+  shopCartGood.starRate = 0
+  shopCartGood.comments = ''
+  showCommentDialog.value = false
+}
+// 提交评价，每次订单只可评价一次,相当于更新订单
+const submitComment = async () => {
+  // 准备提交模型
+  let commentParam = {
+    orderId: shopCartGood.orderId,
+    starRate: shopCartGood.starRate,
+    comments: shopCartGood.comments,
+  }
+  let res = await addCommentApi(commentParam);
+  if (res && res.code === 200) {
+    ElMessage.success(res.msg)
+    //将最新评论回写
+    shopCartGood.allComments = res.data
+    // 刷新table列表关闭评论弹框
+    await getShopCartList()
+    showCommentDialog.value = false;
+  }
+}
+
+
 /*
 *分页参数与高度控制
  */
@@ -333,9 +403,7 @@ onMounted(() => {
   color: var(--el-color-primary);
 }
 
-.infinite-list .infinite-list-item + .list-item {
+.infinite-list .infinite-list-item+.list-item {
   margin-top: 10px;
 }
-
-/* 文本框限制 */
 </style>

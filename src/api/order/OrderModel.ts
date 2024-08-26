@@ -32,3 +32,9 @@ export type payParam = {
     userId: any;
     status: number
 }
+//用户提交评价模型
+export type commentParam = {
+    orderId: string,
+    starRate: number
+    comments: string,
+}

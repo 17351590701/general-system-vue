@@ -162,7 +162,7 @@ import {ref, reactive, onMounted, nextTick, computed, watch, watchEffect, h} fro
 import SysDialog from '@/components/SysDialog.vue'
 import useDialog from '@/hooks/useDialog'
 import {getListApi, addGoodApi, deleteGoodApi, editGoodApi, getCategoryListApi, getGoodConditionApi} from '@/api/good'
-import {shopCartApi, getBalance} from '@/api/user'
+import {getBalance} from '@/api/user'
 import {getSelectApi} from '@/api/category'
 import {type FormInstance, ElMessage, ElNotification} from 'element-plus';
 import type {GoodModel} from '@/api/good/GoodModel';

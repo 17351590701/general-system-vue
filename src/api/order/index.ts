@@ -1,5 +1,5 @@
 import request from "@/http";
-import type {OrderModel, OrderListParam, ShopCartDto, payParam} from "./OrderModel";
+import type {OrderModel, OrderListParam, ShopCartDto, payParam, commentParam} from "./OrderModel";
 // 新增订单：在商品页面，购买商品，生成订单
 export const addOrderApi = (param: OrderModel) => {
     return request.post("/api/sysOrder/addOrder", param);
@@ -31,3 +31,7 @@ export const getShopCartListAPi = (shopCartDto: ShopCartDto) => {
 export const shopCartPayApi = (payParam: payParam) => {
     return request.post("/api/sysOrder/shopCartPay?orderId", payParam);
 };
+//用户提价商品评价
+export const addCommentApi = (commentParam:commentParam)=>{
+    return request.put("/api/sysOrder/comment",commentParam)
+}

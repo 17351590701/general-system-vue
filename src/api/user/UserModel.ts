@@ -42,3 +42,14 @@ export type shopListModel = {
   pageSize: number;
   total: number;
 };
+//用户修改个人信息
+export type CustomUser = {
+  userId: string;
+  username: string;
+  nickName: string;
+  sex: string;
+  balance: string;
+  phone: string;
+  email: string;
+  avatar: string;
+};

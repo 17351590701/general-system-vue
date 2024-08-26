@@ -92,6 +92,7 @@ const login = () => {
         userStore.setUserId(res.data.userId)
         userStore.setNickName(res.data.nickName)
         userStore.setToken(res.data.token)
+        userStore.setAvatar(res.data.avatar)
         ElMessage.success("登录成功")
         //跳转至首页
         await router.push('/')

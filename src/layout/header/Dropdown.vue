@@ -227,8 +227,8 @@ const userDetails = reactive({
 
 //取消修改信息
 const cancelSubmitUser = async () => {
-  //根据头像uuid，删除后端已经上传的头像
-  if (userDetails.avatar) {
+  // 如果修改过了头像根据头像uuid，删除后端已经上传的头像
+  if (userDetails.avatar != userStore.getAvatar) {
     let res = await deleteAvatar(userDetails.avatar);
     if (res.code != 200) {
       ElMessage.error(res.msg)
@@ -241,6 +241,7 @@ const cancelSubmitUser = async () => {
   // 重置属性，关闭弹框
   userForm.value?.resetFields()
   imageUrl.value = ''
+  userDetails.avatar = ''
   userDetailsDialog.value = false
 }
 //提交修改
@@ -256,7 +257,11 @@ const confirmSubmitUser = () => {
       } else {
         ElMessage.error(res.msg)
       }
-      //关闭弹框
+      //关闭弹框，清空临时信息
+      imageUrl.value = ''
+      tempAvatar.value = ''
+      userForm.value?.resetFields()
+      console.log(userDetails);
       userDetailsDialog.value = false;
     }
   })
@@ -271,7 +276,7 @@ const handleAvatarSuccess: UploadProps['onSuccess'] = (
 ) => {
   //临时显示图片
   imageUrl.value = URL.createObjectURL(uploadFile.raw!)
-  // 保存图片地址
+  // 保存后端返回的图片uuid
   userDetails.avatar = response.msg
 }
 

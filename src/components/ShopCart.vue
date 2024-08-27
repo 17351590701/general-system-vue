@@ -3,15 +3,16 @@
   <el-card style="margin-left: 20px;width: auto">
     <template #header>
       <div class="card-header">
-        <span>购物车</span>
+        <span style="font-size: 16px;font-family:Helvetica,'HarmonyOS Sans SC',sans-serif">购物车</span>
       </div>
     </template>
     <el-table :data="tableList" border stripe style="height: 530px;">
       <el-table-column label="商品图片" width="150">
         <template #default="scope">
           <el-image style="width: 90px; height: 70px;border-radius: 10px"
-            :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
-            :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]" :preview-teleported="true">
+                    :src="'http://localhost:8888/api/files/' + scope.row.pictureKey"
+                    :preview-src-list="['http://localhost:8888/api/files/' + scope.row.pictureKey]"
+                    :preview-teleported="true">
           </el-image>
         </template>
       </el-table-column>
@@ -28,14 +29,14 @@
       </el-table-column>
       <el-table-column label="操作" width="150">
         <template #default="scope">
-          <el-button type="info" plain @click="showDetails(scope.row)">查看详情</el-button>
+          <el-button type="info" text bg @click="showDetails(scope.row)">查看详情</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页-->
     <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="shopCartParam.currentPage"
-      :page-sizes="[10, 20, 30, 40]" :page-size="shopCartParam.pageSize"
-      layout="total, sizes, prev, pager, next, jumper" :total="shopCartParam.total">
+                   :page-sizes="[10, 20, 30, 40]" :page-size="shopCartParam.pageSize"
+                   layout="total, sizes, prev, pager, next, jumper" :total="shopCartParam.total">
     </el-pagination>
   </el-card>
   <!-- 商品订单详情弹框 -->
@@ -44,10 +45,10 @@
       <el-col :span="9">
         <el-form-item label="">
           <el-image
-            style="width: 230px; height: 280px;border-radius: 10px;border: #324152 2px solid;box-shadow: #b2b2b2 2px 2px 1px 1px;"
-            :src="'http://localhost:8888/api/files/' + shopCartGood.pictureKey"
-            :preview-src-list="['http://localhost:8888/api/files/' + shopCartGood.pictureKey]"
-            :preview-teleported="true">
+              style="width: 230px; height: 280px;border-radius: 10px;border: #324152 2px solid;box-shadow: #b2b2b2 2px 2px 1px 1px;"
+              :src="'http://localhost:8888/api/files/' + shopCartGood.pictureKey"
+              :preview-src-list="['http://localhost:8888/api/files/' + shopCartGood.pictureKey]"
+              :preview-teleported="true">
           </el-image>
         </el-form-item>
       </el-col>
@@ -63,16 +64,16 @@
         </el-form-item>
         <el-form-item label="购买数量:" label-width="90px">
           <el-input-number v-model="shopCartGood.buyNum" :min="0" :max="shopCartGood.stock"
-            :disabled="getBoolean"></el-input-number>
+                           :disabled="getBoolean"></el-input-number>
         </el-form-item>
         <el-form-item label="收货地址:" label-width="90px">
           <el-input v-model="shopCartGood.address" type="textarea" resize="none" :disabled="getBoolean"
-            :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
+                    :autosize="{ minRows: 2, maxRows: 4 }"></el-input>
         </el-form-item>
         <el-form-item label="总计:" label-width="90px" style="float: right;margin-top:30px;font-size: 20px;">
           <span style="font-size: 20px;color: orangered;font-weight: bold">{{
-            formatPrice(shopCartGood.price * shopCartGood.buyNum)
-          }}</span>
+              formatPrice(shopCartGood.price * shopCartGood.buyNum)
+            }}</span>
         </el-form-item>
       </el-col>
     </el-row>
@@ -81,10 +82,21 @@
       <el-divider content-position="left">买家评价</el-divider>
       <ul class="infinite-list" style="overflow: auto">
         <li v-for="(comment, index) in shopCartGood.allComments" :key="index" class="infinite-list-item">
-          <div>
-            <div>{{ comment.nickName }}</div>
+          <div style="width: 100%;height: 100%;display: flex;flex-direction: column;">
+            <div id="avatar-nickName" style="display: flex;align-items: center">
+              <!-- 如果用户没自定义头像，则默认显示头像 -->
+              <el-avatar v-if="userStore.getAvatar == ''"
+                         src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">User
+              </el-avatar>
+              <el-avatar v-else :src="'http://localhost:8888/api/files/' + userStore.getAvatar"></el-avatar>
+              <!--真实姓名，匿名操作，替换第一个汉字后面的字为"xx"-->
+              <span style="margin-left: 10px">{{ comment.nickName.replace(comment.nickName.substring(1),"**") }}</span>
+            </div>
+            <!--用户评论-->
             <div>
-              {{ comment.comments }}
+              <el-input type="textarea" disabled v-model="comment.comments" style="height: 50px;width: 97%;padding-left: 7px;margin-top: 3px" resize="none"
+                        :autosize="{ minRows: 2, maxRows: 4 }">
+              </el-input>
             </div>
           </div>
         </li>
@@ -92,15 +104,18 @@
     </div>
     <template #footer>
       <el-row justify="end">
-        <!-- 已收货后可评价 -->
-        <el-button type="danger" plain @click="commentDialog" v-if="shopCartGood.status === 5">
-          去评价
+        <!-- 已收货后可评价/判断是否已经评价过 -->
+        <el-button type="success" plain @click="commentDialog" v-if="shopCartGood.status === 5">
+          <template #default>
+            <span v-if="shopCartGood.comments ==null">去评价</span>
+            <span v-else>修改评价</span>
+          </template>
         </el-button>
         <!-- 未支付/已收货、和已取消的订单可以删除 -->
         <el-popconfirm title="确认删除该订单信息吗?" width="210px" @confirm="shopCartDelete">
           <template #reference>
-            <el-button type="primary" plain
-              v-if="shopCartGood.status === 0 || shopCartGood.status === 5 || shopCartGood.status === 6 || shopCartGood.status === 8 || shopCartGood.status === 10">
+            <el-button type="danger" plain
+                       v-if="shopCartGood.status === 0 || shopCartGood.status === 5 || shopCartGood.status === 6 || shopCartGood.status === 8 || shopCartGood.status === 10">
               删除订单
             </el-button>
           </template>
@@ -109,7 +124,8 @@
         <el-button type="primary" plain @click="shopCartPay" v-if="shopCartGood.status === 0">
           去结算
         </el-button>
-        <el-popconfirm title="请确保您已经收到了货物?" width="250px" @confirm="confirmReceive" v-if="shopCartGood.status === 1">
+        <el-popconfirm title="请确保您已经收到了货物?" width="250px" @confirm="confirmReceive"
+                       v-if="shopCartGood.status === 1">
           <template #reference>
             <el-button type="warning" plain>
               确认收货
@@ -117,7 +133,7 @@
           </template>
         </el-popconfirm>
         <el-button type="primary" plain
-          v-if="shopCartGood.status === 1 || shopCartGood.status === 2 || shopCartGood.status === 3 || shopCartGood.status === 4 || shopCartGood.status === 5">
+                   v-if="shopCartGood.status === 1 || shopCartGood.status === 2 || shopCartGood.status === 3 || shopCartGood.status === 4 || shopCartGood.status === 5">
           去退货/退款
         </el-button>
       </el-row>
@@ -126,22 +142,23 @@
   <!--用户评价弹框-->
   <el-dialog v-model="showCommentDialog" width="500" top="30vh" style="padding: 10px">
     <template #title style="height: 20px;">
-      <p style="font-size: 15px;margin-top: 10px;margin-bottom: 0px;">用户评价
+      <p style="font-size: 15px;margin-top: 10px;margin-bottom: 0;">用户评价
         <el-tooltip effect="dark" content="您的评价内容在商品评价页面将会被匿名展示" placement="right-start">
           <el-icon style="margin-left: 5px;font-size: 18px" color="#7f7f7f">
-            <QuestionFilled />
+            <QuestionFilled/>
           </el-icon>
         </el-tooltip>
       </p>
     </template>
     <el-form label-width="80px">
       <el-form-item label="商品星级:">
-        <el-rate style="margin-left: 10px" v-model="shopCartGood.starRate" :texts="['非常差', '差', '一般', '好', '非常好']"
-          show-text size="large" />
+        <el-rate style="margin-left: 10px" v-model="shopCartGood.starRate"
+                 :texts="['非常差', '差', '一般', '好', '非常好']"
+                 show-text size="large"/>
       </el-form-item>
       <el-form-item label="商品评价:">
-        <el-input type="textarea" v-model="shopCartGood.comments" resize="none"
-          :autosize="{ minRows: 3, maxRows: 5 }"></el-input>
+        <el-input type="textarea" v-model="shopCartGood.comments" resize="none" maxlength="180" show-word-limit
+                  :autosize="{ minRows: 3, maxRows: 5 }"></el-input>
       </el-form-item>
       <el-form-item label-width="320">
         <el-button type="danger" @click="cancelComment">取消</el-button>
@@ -152,10 +169,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, nextTick, computed } from 'vue'
-import { addCommentApi, deleteOrderApi, getShopCartListAPi, shopCartPayApi, updateOrderApi } from '@/api/order';
-import { useUserStore } from '@/stores/user';
-import { ElMessage } from "element-plus";
+import {ref, reactive, onMounted, nextTick, computed} from 'vue'
+import {addCommentApi, deleteOrderApi, getShopCartListAPi, shopCartPayApi, updateOrderApi} from '@/api/order';
+import {useUserStore} from '@/stores/user';
+import {ElMessage} from "element-plus";
+import {QuestionFilled} from "@element-plus/icons-vue";
 
 const userStore = useUserStore()
 // 请求后端参数
@@ -185,8 +203,9 @@ const shopCartGood = reactive({
   starRate: 0,
   comments: '',
   allComments: [{
-    "nickName": "",
-    "comments": ""
+    nickName: '',
+    avatar: '',
+    comments: ''
   }]
 })
 //列表显示
@@ -196,13 +215,13 @@ const getShopCartList = async () => {
   tableList.value = res.data.records
   shopCartParam.total = res.data.total
 }
-const shareRow = ref(null)
 const showDetails = (row: any) => {
   //  打开弹窗，显示订单商品详情
   showGoodDetails.value = true
   // 数值回写 
   Object.assign(shopCartGood, row)
   shopCartGood.allComments = row.allComments
+  console.log(shopCartGood);
 
 }
 
@@ -397,13 +416,14 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 80px;
+  height: 100px;
   background: var(--el-color-primary-light-9);
   margin: 10px;
   color: var(--el-color-primary);
 }
 
-.infinite-list .infinite-list-item+.list-item {
+.infinite-list .infinite-list-item + .list-item {
   margin-top: 10px;
 }
+
 </style>

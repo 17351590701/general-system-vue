@@ -1,14 +1,14 @@
 <template>
   <!--logo-->
   <MenuLogo />
-  <!--配置router属性，将会以：index中的menu.path进行跳转 -->
+  <!--配置router属性，将会以：index中的menu.path进行跳转 #2e4057 -->
   <el-menu :default-active="defaultActive" class="el-menu-vertical-demo" :collapse="isCollapse"
     background-color="#2e4057" router>
     <MenuItem :menuList="menuList" />
   </el-menu>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, reactive } from 'vue'
+import { computed } from 'vue'
 import MenuItem from "./MenuItem.vue";
 import MenuLogo from "./menuLogo.vue";
 import { useRoute } from "vue-router";

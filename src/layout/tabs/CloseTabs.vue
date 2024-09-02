@@ -111,5 +111,6 @@ const closeAll = () => {
   color: #f3f3f3;
   font-size: 15px;
   outline: none;
+  font-family: "HarmonyOS Sans SC",sans-serif;
 }
 </style>

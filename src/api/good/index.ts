@@ -2,7 +2,6 @@ import request from '@/http'
 import { type GoodListParam, type GoodModel ,type GoodCondition ,type shopModel} from '@/api/good/GoodModel'
 //新增
 export const addGoodApi=(param:GoodModel)=>{
-    console.log(param);
     return request.post("/api/good",param)
 }
 //删除

@@ -37,6 +37,7 @@ import CloseTabs from "@/layout/tabs/CloseTabs.vue";
 
   .aside {
     background-color: #304156;
+
     box-shadow: rgba(0, 0, 0, 0.24) 2px 3px 5px;
   }
 

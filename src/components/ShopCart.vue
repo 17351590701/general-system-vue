@@ -1,12 +1,22 @@
 <template>
   <!-- 购物车卡片 -->
-  <el-card style="margin-left: 20px;width: auto">
+  <el-card style="margin-left: 10px;width: auto;">
+    <!--切换选项卡-->
     <template #header>
-      <div class="card-header">
-        <span style="font-size: 16px;font-family:Helvetica,'HarmonyOS Sans SC',sans-serif">购物车</span>
+      <div style="display: flex;">
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tab-pane label="全部订单" name="showAll"></el-tab-pane>
+          <el-tab-pane label="待付款" name="waitPay"></el-tab-pane>
+          <el-tab-pane label="待收货" name="waitReceive"></el-tab-pane>
+          <el-tab-pane label="待评价" name="waitComment"></el-tab-pane>
+          <el-tab-pane label="退换/售后" name="afterSales"></el-tab-pane>
+        </el-tabs>
+        <el-button type="danger" @click="delBatch" size="small" style="margin-left: 300px;margin-top: 10px">批量删除</el-button>
       </div>
     </template>
-    <el-table :data="tableList" border stripe style="height: 530px;">
+    <el-table :data="tableList" @selection-change="handleSelectionChange"
+              border stripe style="height: 550px;">
+      <el-table-column type="selection" label="选择" width="50"></el-table-column>
       <el-table-column label="商品图片" width="150">
         <template #default="scope">
           <el-image style="width: 90px; height: 70px;border-radius: 10px"
@@ -17,7 +27,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="goodName" label="商品名称"></el-table-column>
-      <el-table-column prop="sum" label="总计"></el-table-column>
+      <el-table-column prop="sum" label="总计" sortable></el-table-column>
       <el-table-column prop="status" label="订单状态">
         <template #default="scope">
           <div style="display: flex;justify-content: center;">
@@ -34,7 +44,9 @@
       </el-table-column>
     </el-table>
     <!-- 分页-->
-    <el-pagination @size-change="sizeChange" @current-change="currentChange" :current-page="shopCartParam.currentPage"
+    <el-pagination class="pagination"
+                   @size-change="sizeChange" background @current-change="currentChange"
+                   :current-page="shopCartParam.currentPage"
                    :page-sizes="[10, 20, 30, 40]" :page-size="shopCartParam.pageSize"
                    layout="total, sizes, prev, pager, next, jumper" :total="shopCartParam.total">
     </el-pagination>
@@ -90,11 +102,12 @@
               </el-avatar>
               <el-avatar v-else :src="'http://localhost:8888/api/files/' + userStore.getAvatar"></el-avatar>
               <!--真实姓名，匿名操作，替换第一个汉字后面的字为"xx"-->
-              <span style="margin-left: 10px">{{ comment.nickName.replace(comment.nickName.substring(1),"**") }}</span>
+              <span style="margin-left: 10px">{{ comment.nickName.replace(comment.nickName.substring(1), "**") }}</span>
             </div>
             <!--用户评论-->
             <div>
-              <el-input type="textarea" disabled v-model="comment.comments" style="height: 50px;width: 97%;padding-left: 7px;margin-top: 3px" resize="none"
+              <el-input type="textarea" disabled v-model="comment.comments"
+                        style="height: 50px;width: 97%;padding-left: 7px;margin-top: 3px" resize="none"
                         :autosize="{ minRows: 2, maxRows: 4 }">
               </el-input>
             </div>
@@ -104,10 +117,13 @@
     </div>
     <template #footer>
       <el-row justify="end">
-        <!-- 已收货后可评价/判断是否已经评价过 -->
-        <el-button type="success" plain @click="commentDialog" v-if="shopCartGood.status === 5">
+        <!-- 已收货、退款后可评价/判断是否已经评价过 -->
+        <el-button type="success" plain @click="commentDialog"
+                   v-if="shopCartGood.status === 5||shopCartGood.status === 7||shopCartGood.status === 8">
           <template #default>
-            <span v-if="shopCartGood.comments ==null">去评价</span>
+            <span v-if="shopCartGood.comments ==null">
+              去评价
+            </span>
             <span v-else>修改评价</span>
           </template>
         </el-button>
@@ -132,7 +148,7 @@
             </el-button>
           </template>
         </el-popconfirm>
-        <el-button type="primary" plain
+        <el-button type="primary" plain @click="shopCartReturn"
                    v-if="shopCartGood.status === 1 || shopCartGood.status === 2 || shopCartGood.status === 3 || shopCartGood.status === 4 || shopCartGood.status === 5">
           去退货/退款
         </el-button>
@@ -170,10 +186,19 @@
 
 <script lang="ts" setup>
 import {ref, reactive, onMounted, nextTick, computed} from 'vue'
-import {addCommentApi, deleteOrderApi, getShopCartListAPi, shopCartPayApi, updateOrderApi} from '@/api/order';
+import {
+  addCommentApi,
+  deleteOrderApi, deleteBatchShopCart,
+  getShopCartListAPi,
+  shopCartPayApi,
+  shopCartReturnApi,
+  updateOrderApi
+} from '@/api/order';
 import {useUserStore} from '@/stores/user';
 import {ElMessage} from "element-plus";
 import {QuestionFilled} from "@element-plus/icons-vue";
+import type {TabsPaneContext} from 'element-plus'
+
 
 const userStore = useUserStore()
 // 请求后端参数
@@ -208,15 +233,44 @@ const shopCartGood = reactive({
     comments: ''
   }]
 })
-//列表显示
+
+const activeName = ref('showAll')
+// 点击选项卡触发
+const handleClick = (tab: TabsPaneContext, event: Event) => {
+  // 根据tab-name值过滤tableList
+  switch (tab.paneName) {
+    case 'showAll': //什么都不做直接返回
+      tableList.value = tableListCopy.value
+      break
+    case 'waitPay': //过滤出订单状态为"0"，显示未支付订单
+      tableList.value = tableListCopy.value.filter((item: any) => item.status === 0)
+      break
+    case 'waitReceive': //过滤出订单状态为"1"，显示待收货订单
+      tableList.value = tableListCopy.value.filter((item: any) => item.status === 1)
+      break
+    case 'waitComment': //过滤出shopCartGood.comment=null，未评价的
+      tableList.value = tableListCopy.value.filter((item: any) => item.comments == null)
+      break
+    case 'afterSales': //过滤出售后中的
+      tableList.value = tableListCopy.value.filter((item: any) => item.status === 7 || item.status === 8)
+      break
+  }
+
+}
+//真正接受数据的列表
 const tableList = ref([])
+// 用于选项卡列表切换
+const tableListCopy = ref([])
 const getShopCartList = async () => {
   let res = await getShopCartListAPi(shopCartParam)
   tableList.value = res.data.records
+  // 拷贝一份用来选项卡还原（showAll）
+  tableListCopy.value = res.data.records
   shopCartParam.total = res.data.total
 }
+
+//  打开弹窗，显示订单商品详情
 const showDetails = (row: any) => {
-  //  打开弹窗，显示订单商品详情
   showGoodDetails.value = true
   // 数值回写 
   Object.assign(shopCartGood, row)
@@ -248,9 +302,9 @@ const getStatusValue = (status: number) => {
     case 6:
       return '已评价'
     case 7:
-      return '退款中'
+      return '售后中'
     case 8:
-      return '已退款'
+      return '已退换'
     case 9:
       return '取消中'
     case 10:
@@ -379,7 +433,36 @@ const submitComment = async () => {
   }
 }
 
+// 商品退货退款
+const shopCartReturn = async () => {
+  let res = await shopCartReturnApi(shopCartGood.orderId)
+  if (res && res.code === 200) {
+    ElMessage.success(res.msg)
+    // 刷新列表
+    await getShopCartList()
+    // 关闭弹窗
+    showGoodDetails.value = false
+  } else {
+    ElMessage.error(res.msg)
+  }
+}
 
+// 表格多选函数
+const multipleSelection = ref<any[]>([])
+const handleSelectionChange = (val: any[]) => {
+  // 获取选中的订单id数组
+  multipleSelection.value = val.map(item => item.orderId)
+}
+const delBatch = async () => {
+  let res = await deleteBatchShopCart(multipleSelection.value.join(","));
+  if (res && res.code === 200) {
+    ElMessage.success(res.msg)
+    // 刷新列表
+    await getShopCartList()
+  } else {
+    ElMessage.error(res.msg)
+  }
+}
 /*
 *分页参数与高度控制
  */
@@ -426,4 +509,22 @@ onMounted(() => {
   margin-top: 10px;
 }
 
+::v-deep(.el-card__header) {
+  padding: 5px 20px;
+  height: 45px;
+}
+
+::v-deep(el-tabs el-tabs--top) {
+  margin-bottom: 0;
+}
+
+::v-deep(.el-tabs__item) {
+  font-size: 16px;
+  font-family: "HarmonyOS Sans SC Light", sans-serif;
+  font-weight: normal;
+}
+
+.pagination {
+  margin-top: 10px;
+}
 </style>

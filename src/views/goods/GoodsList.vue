@@ -16,11 +16,11 @@
       </el-form-item>
     </el-form>
     <!-- 新增编辑弹窗 -->
-    <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
-               @on-close="onClose" @on-confirm="commit">
+    <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="400"
+               @on-close="onClose" @on-confirm="commit" style="border-radius: 5px">
       <template v-slot:content>
         <el-form :model="addModel" ref="addRef" :rules="rules" label-width="100px" size="default"
-                 style="height:290px;overflow:auto;">
+                 style="height:500px;overflow:auto;">
           <el-form-item label="商品图片">
             <el-upload action="http://localhost:8888/api/files/upload" :on-success="uploadImg">
               <el-tooltip content="PNG,JPEG 文件小于 500KB" placement="right">
@@ -34,12 +34,13 @@
           <el-form-item label="商品类别">
             <!--复选框-->
             <SelectChecked :bindValue="bindValue" ref="selectRef" :options="options" @selected="selected"
-                           style="width:200px">
+                           style="width:300px">
             </SelectChecked>
           </el-form-item>
           <el-form-item label="商品描述" prop="description">
             <el-input v-model="addModel.description" type="textarea" placeholder="请输入商品相关描述"
-                      style="width: 400px"/>
+                      style="width: 350px"
+                      :autosize="{ minRows: 2, maxRows: 4 }" resize="none" show-word-limit maxlength="180"/>
           </el-form-item>
           <el-form-item label="商品价格" prop="price" style="width:300px">
             <el-input v-model="addModel.price" placeholder="单位:元"></el-input>
@@ -51,7 +52,7 @@
       </template>
     </SysDialog>
     <!-- table显示列表-->
-    <el-table :data="tableList" border stripe :heigth="tableHeight">
+    <el-table :data="tableList" border stripe :height="tableHeight">
       <el-table-column label="商品图片" width="150">
         <template #default="scope">
           <el-image style="width: 100px; height: 80px;border-radius: 10px"
@@ -62,44 +63,69 @@
         </template>
       </el-table-column>
       <el-table-column prop="goodName" label="商品名称" width="150"></el-table-column>
-      <el-table-column prop="description" label="商品描述" width="250"></el-table-column>
-      <el-table-column prop="price" label="价格/(元)" width="100">
+      <el-table-column prop="description" label="商品描述" width="250">
+        <template #default="scope" style="width: 100px">
+          <el-dropdown placement="bottom-end">
+            <el-text tag="ins" truncated style="width: 200px;outline: none;">{{ scope.row.description }}</el-text>
+            <template #dropdown>
+              <el-text line-clamp="3" style="width: 300px;height: auto;border-radius: 5px;">{{
+                  scope.row.description
+                }}
+              </el-text>
+            </template>
+          </el-dropdown>
+
+        </template>
+      </el-table-column>
+      <el-table-column prop="price" label="价格/(元)" sortable width="150">
         <template #default="scope">
           <div style="display: flex; justify-content: center;">
             <el-tag type="primary" effect="plain" style="margin: 0 10px;">{{ scope.row.price }}</el-tag>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="storeNum" label="库存/(个)" width="100">
+      <el-table-column prop="storeNum" label="库存/(个)" sortable width="150">
         <template #default="scope">
           <div style="display: flex; justify-content: center;">
             <el-tag type="success" effect="plain" style="margin: 0 10px;">{{ scope.row.storeNum }}</el-tag>
           </div>
         </template>
       </el-table-column>
+      <el-table-column prop="rateScore" label="评分" width="200" sortable align="center">
+        <template #default="scope">
+          <el-rate
+              v-model="scope.row.rateScore"
+              disabled
+              show-score
+              text-color="#ff9900"
+              style="height: 50px"
+              score-template="{value} points"
+          />
+        </template>
+      </el-table-column>
       <el-table-column v-if="global.$hasPerm(['sys:good:edit', 'sys:good:delete'])" label="操作" align="center">
         <template #default="scope">
-          <el-button icon="Select" size="default"
+          <el-button icon="Select"
                      @click="buyBtn(scope.row.goodId, scope.row.goodName, scope.row.price, scope.row.storeNum)">购买
           </el-button>
-          <el-button v-if="global.$hasPerm(['sys:good:edit'])" type="primary" size="default" icon="Edit"
+          <el-button v-if="global.$hasPerm(['sys:good:edit'])" type="primary" icon="Edit"
                      @click="editBtn(scope.row)">编辑
           </el-button>
-          <el-button v-if="global.$hasPerm(['sys:good:delete'])" type="danger" size="default" icon="Delete"
+          <el-button v-if="global.$hasPerm(['sys:good:delete'])" type="danger"  icon="Delete"
                      @click="deleteBtn(scope.row.goodId)">删除
           </el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页-->
-    <el-pagination class="pagination" @size-change="sizeChange" @current-change="currentChange"
+    <el-pagination class="pagination" background @size-change="sizeChange" @current-change="currentChange"
                    :current-page="searchParam.currentPage" :page-sizes="[10, 20, 30, 40]"
                    :page-size="searchParam.pageSize"
                    layout="total, sizes, prev, pager, next, jumper" :total="searchParam.total">
     </el-pagination>
     <!-- 筛选弹窗 -->
     <SysDialog :title="filterTitle" :visible="filterVisible" :width="500" :height="150" @on-close="filterClose"
-               @on-show="filterShow" @on-confirm="filterConfirm">
+               @on-show="filterShow" @on-confirm="filterConfirm" style="border-radius: 5px">
       <template v-slot:content>
         <el-form :model="filterModel" label-width="80px" :inline="false" size="default">
           <el-form-item label="商品类别">
@@ -158,7 +184,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, onMounted, nextTick, computed, watch, watchEffect, h} from 'vue';
+import {ref, reactive, onMounted, nextTick, computed} from 'vue';
 import SysDialog from '@/components/SysDialog.vue'
 import useDialog from '@/hooks/useDialog'
 import {getListApi, addGoodApi, deleteGoodApi, editGoodApi, getCategoryListApi, getGoodConditionApi} from '@/api/good'
@@ -168,10 +194,10 @@ import {type FormInstance, ElMessage, ElNotification} from 'element-plus';
 import type {GoodModel} from '@/api/good/GoodModel';
 import useInstance from '@/hooks/useInstance';
 import SelectChecked from "@/components/SelectChecked.vue";
-import type {List} from 'echarts';
-import {type shopModel} from '@/api/good/GoodModel';
 import {useUserStore} from '@/stores/user';
 import {addOrderApi} from '@/api/order';
+import {CaretBottom, CaretTop} from "@element-plus/icons-vue";
+import emitter from "@/utils/emitter";
 
 
 const userStore = useUserStore()
@@ -194,6 +220,7 @@ const addModel = reactive({
   price: '',
   storeNum: '',
   pictureKey: '',
+  rateScore: '',
   createTime: '',
   updateTime: '',
   categoryId: ''
@@ -307,6 +334,7 @@ const commit = () => {
       if (tags.value == '0') {
         res = await addGoodApi(addModel)
       } else {
+        console.log(addModel)
         res = await editGoodApi(addModel)
       }
       if (res && res.code == 200) {
@@ -323,8 +351,6 @@ const tableList = ref([])
 async function getList() {
   let res = await getListApi(searchParam)
   if (res && res.code == 200) {
-    console.log(res.data);
-
     tableList.value = res.data.records
     searchParam.total = res.data.total
   }
@@ -447,9 +473,11 @@ const twiceConfirm = async () => {
     ElNotification.error({
       title: '余额不足',
       message: '余额不足，请充值',
-      showClose: false,
-      duration: 3000
+      offset: 100,
+      duration: 2000,
     })
+    // 事件总线，调用NotificationBell中的方法
+    emitter.emit('refreshnNotifitions');
     return
   }
   // 构造请求对象
@@ -466,7 +494,13 @@ const twiceConfirm = async () => {
   }
   let res = await addOrderApi(orderParam)
   if (res && res.code == 200) {
-    ElMessage.success(res.msg)
+    ElNotification.success({
+      title: '订单通知',
+      message: '商品[' + orderParam.goodName + ']购买成功',
+      offset: 100,
+      duration: 2000,
+    })
+    emitter.emit('refreshnNotifitions');
   }
   // 刷新列表
   getList();
@@ -502,9 +536,11 @@ const twiceCancel = async () => {
     ElNotification.success({
       title: '购物车通知',
       message: msg,
-      showClose: false,
-      duration: 3000
+      offset: 100,
+      duration: 2000
     })
+    // 事件总线，调用NotificationBell中的方法
+    emitter.emit('refreshnNotifitions');
   }
   // 刷新列表
   getList();
@@ -527,6 +563,7 @@ const onCloseBuy = () => {
   buyModel.visible = false
 }
 
+
 //页容量改变时触发
 const sizeChange = (size: number) => {
   searchParam.pageSize = size
@@ -541,15 +578,13 @@ const currentChange = (page: number) => {
 const tableHeight = ref(0)
 onMounted(() => {
   getList();
-  nextTick(() => {
-    tableHeight.value = window.innerHeight - 200
-  })
+  tableHeight.value = window.innerHeight - 200
 })
 
 </script>
 
 <style scoped lang="scss">
 .pagination {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 </style>

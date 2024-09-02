@@ -1,3 +1,4 @@
+
 import { createApp } from 'vue'
 //引入pinia
 import { createPinia } from 'pinia'

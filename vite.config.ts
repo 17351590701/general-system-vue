@@ -10,7 +10,7 @@ export default defineConfig({
   ],
   server: {
     host: '0.0.0.0',//解决“vite use '--host' to expose”
-    port: 8081,
+    port: 8080,
     hmr: true,//热更新
     open: true//自动打开浏览器
   },

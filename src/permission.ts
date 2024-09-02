@@ -29,8 +29,8 @@ router.beforeEach(async (to, from, next) => {
                     //等待路由完全加载
                     next({ ...to, replace: true })
                 } catch (error) {
-                    //查询不到后端信息，就清空了数据,非正常退出，不清空token，由后端过期控制
-                    // localStorage.clear();
+                    //查询不到后端信息
+                    localStorage.clear();
                     // 获取数据失败，跳转至登录页
                     next({path:'/login'})
                 }

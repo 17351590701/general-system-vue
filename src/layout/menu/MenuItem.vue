@@ -8,9 +8,9 @@
           <!--动态生成图标，绑定menuBar中的icon-->
           <component :is="menu.meta.icon"></component>
         </el-icon>
-          <span>{{menu.meta.title}}</span>
+        <span>{{ menu.meta.title }}</span>
       </template>
-    <!--生成下级，递归调用，自己生成自己-->
+      <!--生成下级，递归调用，自己生成自己-->
       <menu-item :menu-list="menu.children"></menu-item>
     </el-sub-menu>
     <!--否则直接创建menu-item-->
@@ -19,7 +19,9 @@
         <!--动态生成图标，绑定menuBar中的icon-->
         <component :is="menu.meta.icon"></component>
       </el-icon>
-      <template #title>{{menu.meta.title}}</template>
+      <template #title>
+        <span>{{ menu.meta.title }}</span>
+      </template>
     </el-menu-item>
   </template>
 </template>
@@ -34,6 +36,5 @@ defineProps(['menuList'])
 .el-menu-item.is-active {
   color: #409eff !important;
 }
-
 
 </style>

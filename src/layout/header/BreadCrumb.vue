@@ -1,6 +1,10 @@
 <template>
   <el-breadcrumb class="bred" separator="/">
-    <el-breadcrumb-item v-for="item in tabs">{{ item.meta.title }}</el-breadcrumb-item>
+    <el-breadcrumb-item v-for="item in tabs">
+      <template #default>
+        <span class="bred-item">{{ item.meta.title }}</span>
+      </template>
+    </el-breadcrumb-item>
   </el-breadcrumb>
 </template>
 

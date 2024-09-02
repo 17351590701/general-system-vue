@@ -57,6 +57,7 @@ export const useUserStore = defineStore("user", {
       });
     },
   },
+  // 持久化到浏览器
   persist: {
     key: "user",
     //存储位置

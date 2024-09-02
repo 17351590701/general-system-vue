@@ -50,8 +50,8 @@ const title = ref("电子商城系统")
     color: #fff;
     font-weight: 800;
     line-height: 60px;
-    font-size: 22px;
-    font-family: "HarmonyOS Sans SC Medium", sans-serif;
+    font-size: 25px;
+    font-family: "楷体", sans-serif;
   }
 }
 </style>

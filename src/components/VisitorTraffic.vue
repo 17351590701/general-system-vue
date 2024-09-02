@@ -3,9 +3,9 @@
     <el-row gutter="12">
       <el-col span="12" style="margin: 0 40px">
         <div class="statistic-card">
-          <el-statistic :value="98500">
+          <el-statistic :value="userCount">
             <template #title>
-              <div style="display: inline-flex; align-items: center">
+              <div style="display: inline-flex; align-items: center;">
                 当前活跃用户数
               </div>
             </template>
@@ -14,7 +14,7 @@
             <div class="footer-item">
               <span>较昨日</span>
               <span class="green">
-              24%
+              {{ userPercentage }}
               <el-icon>
                 <CaretTop/>
               </el-icon>
@@ -23,11 +23,11 @@
           </div>
         </div>
       </el-col>
-      <el-col span="12"  style="margin: 0 40px">
+      <el-col span="12" style="margin: 0 40px">
         <div class="statistic-card">
-          <el-statistic :value="72000" title="New transactions today">
+          <el-statistic :value="visitorTraffic" title="New transactions today">
             <template #title>
-              <div style="display: inline-flex; align-items: center">
+              <div style="display: inline-flex; align-items: center;margin-left: 10px">
                 今日人流量
               </div>
             </template>
@@ -35,10 +35,12 @@
           <div class="statistic-footer">
             <div class="footer-item">
               <span>较昨日</span>
-              <span class="green">
-              16%
+              <span
+                  :class="visitorPercentage.substring(0,1) == '-' ? 'red' : 'green'">
+              {{ visitorPercentage }}
               <el-icon>
-                <CaretTop/>
+                <!--<CaretTop/>-->
+                <component :is="visitorPercentage.substring(0,1) == '-' ? 'CaretBottom' : 'CaretTop'"></component>
               </el-icon>
             </span>
             </div>
@@ -50,7 +52,39 @@
 </template>
 
 <script setup lang="ts">
-import { CaretTop } from '@element-plus/icons-vue'
+import {onMounted, ref} from 'vue'
+import {CaretTop} from '@element-plus/icons-vue'
+import {userGrowthRate, getVisitorTraffic} from '@/api/user'
+import {ElMessage} from "element-plus";
+
+//用户与用户较昨日增长率
+const userCount = ref(0)
+const userPercentage = ref('')
+const getUserGrowthRate = async () => {
+  let res = await userGrowthRate();
+  if (res && res.code == 200) {
+    userCount.value = res.data.userCount;
+    userPercentage.value = res.data.userPercentage;
+  } else {
+    ElMessage.error("获取用户与用户较昨日增长率失败")
+  }
+}
+//用户访问量与流量较昨日增长率
+const visitorTraffic = ref(0)
+const visitorPercentage = ref('')
+const getVisitorTrafficData = async () => {
+  let res = await getVisitorTraffic();
+  if (res && res.code == 200) {
+    visitorTraffic.value = res.data.todayCount;
+    visitorPercentage.value = res.data.trafficPercentage;
+  } else {
+    ElMessage.error("获取用户与用户较昨日增长率失败")
+  }
+}
+onMounted(() => {
+  getUserGrowthRate()
+  getVisitorTrafficData()
+})
 </script>
 
 <style scoped lang="scss">
@@ -100,5 +134,9 @@ import { CaretTop } from '@element-plus/icons-vue'
 
 .red {
   color: var(--el-color-error);
+}
+
+::v-deep(.el-statistic__content) {
+  text-align: center;
 }
 </style>

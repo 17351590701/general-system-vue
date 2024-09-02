@@ -49,7 +49,7 @@
     </el-table>
 
     <!-- 分页-->
-    <el-pagination class="pagination" @size-change="sizeChange" @current-change="currentChange"
+    <el-pagination class="pagination" background @size-change="sizeChange" @current-change="currentChange"
       :current-page="searchParam.currentPage" :page-sizes="[10, 20, 30, 40]" :page-size="searchParam.pageSize"
       layout="total, sizes, prev, pager, next, jumper" :total="searchParam.total">
     </el-pagination>
@@ -202,6 +202,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .pagination {
-  margin-top: 20px;
+  margin-top: 10px;
 }
 </style>

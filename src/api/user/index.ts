@@ -74,3 +74,11 @@ export const deleteAvatar = (uuid: string) => {
 export const updateCustomUser = (param: CustomUser) => {
   return request.put("/api/sysUser/updateCustomUser", param);
 };
+//获取用户增长率
+export const userGrowthRate = ()=>{
+  return request.get("/api/sysUser/userGrowthRate");
+}
+//通过用户请求该接口的次数来计算访问量
+export const getVisitorTraffic =()=>{
+  return request.get("/api/sysUser/visitorTraffic");
+}

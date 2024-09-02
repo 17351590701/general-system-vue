@@ -1,5 +1,6 @@
 import request from "@/http";
 import type {OrderModel, OrderListParam, ShopCartDto, payParam, commentParam} from "./OrderModel";
+import type {UnwrapRef} from "vue";
 // 新增订单：在商品页面，购买商品，生成订单
 export const addOrderApi = (param: OrderModel) => {
     return request.post("/api/sysOrder/addOrder", param);
@@ -32,6 +33,14 @@ export const shopCartPayApi = (payParam: payParam) => {
     return request.post("/api/sysOrder/shopCartPay?orderId", payParam);
 };
 //用户提价商品评价
-export const addCommentApi = (commentParam:commentParam)=>{
-    return request.put("/api/sysOrder/comment",commentParam)
+export const addCommentApi = (commentParam: commentParam) => {
+    return request.put("/api/sysOrder/comment", commentParam)
+}
+//退货退款
+export const shopCartReturnApi = (orderId: string) => {
+    return request.put("/api/sysOrder/return?orderId=" + orderId)
+}
+//批购物车量删除订单
+export const deleteBatchShopCart = (orderIds: string) => {
+    return request.delete("/api/sysOrder/delBatchShopCart/"+orderIds)
 }

@@ -9,17 +9,17 @@
           <el-form :model="loginModel" ref="form" :rules="rules" style="margin-left: 60px">
             <el-form-item prop="username">
               <el-input v-model="loginModel.username" prefix-icon="user" placeholder="请输入用户名"
-                style="width: 95%;"></el-input>
+                        style="width: 95%;"></el-input>
             </el-form-item>
             <el-form-item prop="password">
               <el-input v-model="loginModel.password" show-password prefix-icon="lock" placeholder="请输入密码"
-                style="width: 95%;"></el-input>
+                        style="width: 95%;"></el-input>
             </el-form-item>
             <!-- 验证码 -->
             <el-form-item prop="code">
               <el-input v-model="loginModel.code" placeholder="请输入验证码" style="width: 70%;"></el-input>
               <img :src="captchaImageUrl" alt="限流" style="width: 50px;height: 30px;margin-left: 15px;"
-                @click="refreshCode">
+                   @click="refreshCode">
             </el-form-item>
 
             <el-form-item>
@@ -33,13 +33,13 @@
   </div>
 </template>
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
-import { ElMessage, type FormInstance } from 'element-plus';
-import { loginApi } from '@/api/user'
-import { useUserStore } from '@/stores/user';
-import { useRouter } from 'vue-router';
+import {computed, reactive, ref} from 'vue'
+import {ElMessage, type FormInstance} from 'element-plus';
+import {loginApi} from '@/api/user'
+import {useUserStore} from '@/stores/user';
+import {useRouter} from 'vue-router';
 import request from '@/http/index'
-import { getCaptchaImage } from '@/api/user';
+import {getCaptchaImage} from '@/api/user';
 import axios from 'axios';
 
 //表单ref属性，用于表单验证
@@ -90,6 +90,7 @@ const login = () => {
       if (res && res.code == 200) {
         //存储用户信息，跳转首页
         userStore.setUserId(res.data.userId)
+        userStore.setUsername(res.data.username)
         userStore.setNickName(res.data.nickName)
         userStore.setToken(res.data.token)
         userStore.setAvatar(res.data.avatar)
@@ -106,7 +107,7 @@ const captchaImageUrl = ref('');
 const captchaUuid = ref('');
 
 const refreshCode = async () => {
-  let res = await axios.get('http://localhost:8888/api/sysUser/getImage', { responseType: 'json' });
+  let res = await axios.get('http://localhost:8888/api/sysUser/getImage', {responseType: 'json'});
   if (res.data.msg == '获取成功') {
     captchaUuid.value = res.data.data.captchaId;
     captchaImageUrl.value = `data:image/png;base64,${res.data.data.image}`;

@@ -5,7 +5,10 @@
       <BreadCrumb></BreadCrumb>
     </div>
     <div class="right">
-      <NotifitionBell></NotifitionBell>
+      <!--通知-->
+      <NotifitionBell/>
+      <!--聊天-->
+      <UserChat/>
       <span style="padding-right: 20px;color: #fff;font-family:楷体,sans-serif;font-size: 20px">{{ welcomeText }}</span>
       <Dropdown></Dropdown>
     </div>
@@ -19,6 +22,7 @@ import Dropdown from "@/layout/header/Dropdown.vue";
 import {useUserStore} from '@/stores/user'
 import {computed} from 'vue'
 import NotifitionBell from "@/components/NotifitionBell.vue";
+import UserChat from "@/components/UserChat.vue";
 
 const userStore = useUserStore()
 const nickName = userStore.getNickName

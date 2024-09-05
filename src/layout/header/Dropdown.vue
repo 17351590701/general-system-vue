@@ -5,7 +5,7 @@
       <span>
         <!-- 如果用户没自定义头像，则默认显示头像 -->
         <el-avatar v-if="userStore.getAvatar == ''"
-          src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">User</el-avatar>
+                   src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png">User</el-avatar>
         <el-avatar v-else :src="'http://localhost:8888/api/files/' + userStore.getAvatar"></el-avatar>
       </span>
     </div>
@@ -20,7 +20,7 @@
   </el-dropdown>
   <!-- 修改密码 -->
   <SysDialog :title="dialog.title" :visible="dialog.visible" :width="dialog.width" :height="dialog.height"
-    @on-close="onClose" @on-confirm="commit">
+             @on-close="onClose" @on-confirm="commit">
     <template v-slot:content>
       <el-form :model="upModel" ref="formRef" :rules="rules" label-width="80px" :inline="false" size="default">
         <el-form-item label="原密码" prop="oldPassword">
@@ -40,7 +40,7 @@
   </el-dialog>
   <!-- 个人信息弹框，用于用户自身修改信息 -->
   <el-dialog v-model="userDetailsDialog" title="个人信息" style="border-radius: 5px;" width="600px" center="true"
-    align-center="true">
+             align-center="true">
     <el-form ref="userForm" label-width="80px" :model="userDetails" style="width: 90%;margin-top:20px;padding: 0 30px;">
       <el-form-item label="用户名:">
         <el-input v-model="userDetails.username" placeholder="这是您登录时的账户名"></el-input>
@@ -66,18 +66,19 @@
       <el-form-item label="头像:">
         <div style="border: 1px #dcdfe6 solid;">
           <el-upload class="avatar-uploader" action="http://localhost:8888/api/files/upload" :show-file-list="false"
-            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+                     :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <!-- 如果用户自定义了，优先显示，否则显示用户临时上传，最后是默认上传'+' -->
-            <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+            <img v-if="imageUrl" :src="imageUrl" class="avatar"/>
             <img v-else-if="userStore.getAvatar" :src="'http://localhost:8888/api/files/' + userStore.getAvatar"
-              class="avatar" />
+                 class="avatar"/>
             <el-icon v-else class="avatar-uploader-icon">
-              <Plus />
+              <Plus/>
             </el-icon>
           </el-upload>
         </div>
         <el-button type="info" size="small" plain="true" style="margin-left: 10px;"
-          @click="removeAvatar">清除头像</el-button>
+                   @click="removeAvatar">清除头像
+        </el-button>
       </el-form-item>
       <el-form-item style="float:right">
         <el-button type="danger" @click="cancelSubmitUser">取消</el-button>
@@ -90,24 +91,24 @@
 <script setup lang="ts">
 import SysDialog from "@/components/SysDialog.vue";
 import useDialog from "@/hooks/useDialog";
-import { ElMessage, type FormInstance } from "element-plus";
-import { ref, reactive } from "vue";
-import { updatePasswordApi, logoutApi, getUserById, deleteAvatar, updateCustomUser } from "@/api/user";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user";
+import {ElMessage, type FormInstance} from "element-plus";
+import {ref, reactive} from "vue";
+import {updatePasswordApi, logoutApi, getUserById, deleteAvatar, updateCustomUser} from "@/api/user";
+import {useRouter} from "vue-router";
+import {useUserStore} from "@/stores/user";
 import useInstance from '@/hooks/useInstance';
 import ShopCart from "@/components/ShopCart.vue";
-import type { UploadProps } from 'element-plus'
+import type {UploadProps} from 'element-plus'
 import useStore from "element-plus/es/components/table/src/store/index.mjs";
 
 
 //获取全局global
-const { global } = useInstance()
+const {global} = useInstance()
 
 //为userId获取
 const userStore = useUserStore();
 //弹框属性
-const { dialog, onClose, onShow } = useDialog();
+const {dialog, onClose, onShow} = useDialog();
 //表单Ref属性
 const formRef = ref<FormInstance>()
 //路由
@@ -201,6 +202,7 @@ async function logout() {
   }
 
 }
+
 const userDetailsDialog = ref(false)
 // 显示用户详情弹框
 const userDetailsBtn = async () => {
@@ -252,6 +254,7 @@ const confirmSubmitUser = () => {
       if (res && res.code == 200) {
         ElMessage.success(res.msg)
         //刷新本地用户信息
+        userStore.setUsername(userDetails.username)
         userStore.setNickName(userDetails.nickName)
         userStore.setAvatar(userDetails.avatar)
       } else {
@@ -271,8 +274,8 @@ const imageUrl = ref('')
 
 /* 图片上传成功后 */
 const handleAvatarSuccess: UploadProps['onSuccess'] = (
-  response,
-  uploadFile
+    response,
+    uploadFile
 ) => {
   //临时显示图片
   imageUrl.value = URL.createObjectURL(uploadFile.raw!)

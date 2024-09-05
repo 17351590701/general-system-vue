@@ -63,7 +63,7 @@
         </template>
       </el-table-column>
       <el-table-column prop="goodName" label="商品名称" width="150"></el-table-column>
-      <el-table-column prop="description" label="商品描述" width="250">
+      <el-table-column prop="description" label="商品描述" width="230">
         <template #default="scope" style="width: 100px">
           <el-dropdown placement="bottom-end">
             <el-text tag="ins" truncated style="width: 200px;outline: none;">{{ scope.row.description }}</el-text>
@@ -77,14 +77,14 @@
 
         </template>
       </el-table-column>
-      <el-table-column prop="price" label="价格/(元)" sortable width="150">
+      <el-table-column prop="price" label="价格/(元)" sortable width="110" >
         <template #default="scope">
           <div style="display: flex; justify-content: center;">
             <el-tag type="primary" effect="plain" style="margin: 0 10px;">{{ scope.row.price }}</el-tag>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="storeNum" label="库存/(个)" sortable width="150">
+      <el-table-column prop="storeNum" label="库存/(个)" sortable width="110" >
         <template #default="scope">
           <div style="display: flex; justify-content: center;">
             <el-tag type="success" effect="plain" style="margin: 0 10px;">{{ scope.row.storeNum }}</el-tag>
@@ -473,6 +473,7 @@ const twiceConfirm = async () => {
     ElNotification.error({
       title: '余额不足',
       message: '余额不足，请充值',
+      position: 'bottom-right',
       offset: 100,
       duration: 2000,
     })
@@ -497,6 +498,7 @@ const twiceConfirm = async () => {
     ElNotification.success({
       title: '订单通知',
       message: '商品[' + orderParam.goodName + ']购买成功',
+      position: 'bottom-right',
       offset: 100,
       duration: 2000,
     })
@@ -536,6 +538,7 @@ const twiceCancel = async () => {
     ElNotification.success({
       title: '购物车通知',
       message: msg,
+      position: 'bottom-right',
       offset: 100,
       duration: 2000
     })

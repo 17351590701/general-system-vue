@@ -23,11 +23,12 @@ export interface Result<T = any> {
     total: number;
 }
 
+// axios二次封装
 class request {
     //axios实例化
     private instance: AxiosInstance;
 
-    //初始化的作用
+    //构造函数，初始化配置
     constructor(configs: AxiosRequestConfig) {
         //实例化axios对象
         this.instance = axios.create(configs);
@@ -35,17 +36,17 @@ class request {
         this.interceptors();
     }
 
-    //请求发送之前，返回之后做统一处理
+    //拦截器配置（请求、返回响应）
     private interceptors() {
-        //请求发送之前的处理，请求头携带token
+        //请求发送之前的处理，请求头添加token
         this.instance.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
-                //获取token
+                //从pinia中获取token
                 const userStore = useUserStore();
                 let token = userStore.getToken;
                 if (token) {
                     // 设置token到响应头
-                    config.headers["Authorization"] = "Bearer " + token;
+                    config.headers["Authorization"] = `Bearer ${token}`;
                 }
                 return config;
             },
@@ -53,7 +54,7 @@ class request {
                 //处理请求发送之前的错误
                 error.data = {};
                 error.data.msg = "请求发送失败，请稍后再试";
-                // // 处理错误并封装为 Promise.reject,可以在这里记录日志或者进行其他处理
+                //处理错误并封装为 Promise.reject,可以在这里记录日志或者进行其他处理
                 return Promise.reject(error);
             }
         );
@@ -61,87 +62,63 @@ class request {
         //请求返回之后的处理，统一处理返回值
         this.instance.interceptors.response.use(
             (res: AxiosResponse) => {
-                if (res.data.code == 200) {
+                if (res.data.code == 200) { //结果正常返回
                     return res.data;
-                } else if (res.data.code == 600) {
-                    //token过期，清空数据，跳转登录
-                    const userStore = useUserStore();
-                    userStore.setToken("");
-                    userStore.setUserId("");
-                    userStore.setNickName("")
-                    userStore.setAvatar("")
-                    ElMessage.error(res.data.msg || "登录过期，请重新登录");
-                    localStorage.clear();
-                    window.location.href = "/login";
-                } else {
+                } else if (res.data.code == 600) { //token过期，清空数据，跳转登录
+                    this.handleLogout(res);
+                } else { //其他状态码错误
                     ElMessage.error(res.data.msg || "接口报错!");
                     return Promise.reject(res.data || "接口报错!");
                 }
             },
-            (error: any) => {
-                error.data = {};
-                if (error && error.response) {
-                    switch (error.response.status) {
-                        case 400:
-                            error.data.msg = "请求参数错误";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 401:
-                            error.data.msg = "请先登录";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 403:
-                            error.data.msg = "无权限访问";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 404:
-                            error.data.msg = "请求的资源不存在";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 405:
-                            error.data.msg = "请求方法不被允许";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 408:
-                            error.data.msg = "请求超时";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 500:
-                            error.data.msg = "后台接口错误";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 501:
-                            error.data.msg = "服务未实现";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 502:
-                            error.data.msg = "网关错误";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 503:
-                            error.data.msg = "服务不可用";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 504:
-                            error.data.msg = "网关超时";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        case 505:
-                            error.data.msg = "HTTP版本不受支持";
-                            ElMessage.error(error.data.msg);
-                            break;
-                        default:
-                            error.data.msg = `连接错误${error.response.status}`;
-                            ElMessage.error(error.data.msg);
-                            break;
-                    }
-                } else {
-                    error.data.msg = "连接服务器失败";
-                    ElMessage.error(error.data.msg);
-                }
+            (error: any) => { //其他响应处理
+                this.handleError(error);
                 return Promise.reject(error.data);
             }
         );
+    }
+
+    // token过期，清空、登出处理
+    private handleLogout(response: AxiosResponse) {
+        const userStore = useUserStore();
+        userStore.setToken('');
+        userStore.setUserId('');
+        userStore.setUsername('');
+        userStore.setNickName('');
+        userStore.setAvatar('');
+        ElMessage.error(response.data.message || '登录过期，请重新登录');
+        localStorage.clear();
+        window.location.href = '/login';
+    }
+
+    // 错误返回处理
+    private handleError(error: any) {
+        error.data = {msg: '连接服务器失败'};
+        if (error && error.response) {
+            error.data.msg = this.getErrorMsgByStatusCode(error.response.status);
+            ElMessage.error(error.data.msg);
+        } else {
+            ElMessage.error(error.data.msg);
+        }
+        return Promise.reject(error.data);
+    }
+
+    private getErrorMsgByStatusCode(statusCode: number) {
+        const errorMessages: Record<number, string> = {
+            400: '请求参数错误',
+            401: '请先登录',
+            403: '无权限访问',
+            404: '请求的资源不存在',
+            405: '请求方法不被允许',
+            408: '请求超时',
+            500: '后台接口错误',
+            501: '服务未实现',
+            502: '网关错误',
+            503: '服务不可用',
+            504: '网关超时',
+            505: 'HTTP版本不受支持',
+        };
+        return errorMessages[statusCode] || `连接错误${statusCode}`;
     }
 
     //封装get请求
@@ -162,6 +139,14 @@ class request {
     //delete请求
     delete<T = Result>(url: string, data?: Object): Promise<T> {
         return this.instance.delete(url, data);
+    }
+    upload<T = Result>(url:string,data?:Object):Promise<T>{
+        let config = {
+            headers:{
+                'Content-Type':'multipart/form-data'
+            }
+        }
+        return this.instance.post(url,data,config);
     }
 }
 

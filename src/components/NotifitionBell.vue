@@ -1,6 +1,6 @@
 <template>
   <el-dropdown :hide-on-click="false">
-    <el-icon color="#fff" size="20px" style="margin-right: 30px;outline: none">
+    <el-icon color="#fff" size="20px" style="margin-right: 20px;outline: none">
       <BellFilled/>
     </el-icon>
     <template #dropdown>
@@ -13,9 +13,13 @@
         <el-dropdown-item v-else v-for="(item,index) in notifitionList" :key="index">
           <div class="noticeContainer">
             <div class="noticeHeader">
-              <component :is="item.notifitionIcon" style="width: 20px"></component>
+              <el-icon>
+                <template #default>
+                  <component :is="item.notifitionIcon" style="width: 20px"></component>
+                </template>
+              </el-icon>
               <span style="font-size: 18px;font-family: '楷体',sans-serif">{{ item.notifitionTitle }}</span>
-              <el-icon size="20px" style="margin-left: 210px;" @click="deleteNotifition(item.notifitionId)">
+              <el-icon size="20px" style="margin-left: 180px;" @click="deleteNotifition(item.notifitionId)">
                 <Close/>
               </el-icon>
             </div>
@@ -51,7 +55,7 @@ const notifition = ref<Notifition>(
 const notifitionList = ref<Notifition[]>([])
 const getNotifitions = async () => {
   let res = await getNofititionList();
-  if (res && res.code == 200) {
+  if (res && res.code === 200) {
     //赋值
     notifitionList.value = res.data
   }
@@ -69,9 +73,6 @@ const deleteNotifition = async (notifitionId: number) => {
 onMounted(() => {
   getNotifitions()
 })
-// // 导出刷新方法
-// const refreshNotifitions = getNotifitions;
-// defineExpose({refreshNotifitions})
 
 emitter.on('refreshnNotifitions', () => {
   getNotifitions()
@@ -85,7 +86,9 @@ onUnmounted(()=>{
 ::v-deep(.el-dropdown-menu__item) {
   padding: 3px 7px;
 }
-
+.el-icon:hover {
+  color: #a6d2ff;
+}
 .noticeContainer {
   background: #ecf5ff;
   width: 100%;

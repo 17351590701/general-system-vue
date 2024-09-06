@@ -51,6 +51,10 @@ export const useUserStore = defineStore("user", {
         },
         getInfo() {
             return new Promise((resolve, reject) => {
+                if (this.userId === null || this.userId === "") {
+                    reject("请先登录");
+                    return;
+                }
                 getInfoApi(this.userId)
                     .then((res) => {
                         if (res && res.code == 200) {

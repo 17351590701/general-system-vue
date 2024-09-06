@@ -1,24 +1,29 @@
 <template>
+  <!--聊天icon按钮-->
   <el-icon color="#fff" size="20px" style="margin-right: 30px;outline: none" @click="showChatDialog">
     <ChatDotSquare/>
   </el-icon>
-  <el-dialog v-model="chatDialog" title="服务器聊天室" fullscreen>
-    <div style="padding:10px;margin-bottom: 50px;background: #2c3e50">
+  <!--聊天对话框dialog-->
+  <el-dialog v-model="chatDialog" :before-close="closeSocket" title="服务器聊天室" fullscreen>
+    <div style="height: 100%;width:100%;padding: 20px;box-sizing: border-box;background: #2c3e50">
       <el-row>
+        <!--左侧在线用户列表-->
         <el-col :span="4">
-          <el-card style="width: 300px;height: 300px;color:#333">
+          <el-card style="width: 300px;height: 80%;color:#333">
             <div style="padding-bottom:10px;border-bottom:1px solid #ccc">在线用户<span style="font-size: 12px">(点击气泡开始聊天)</span>
             </div>
             <div style="padding:10px 0" v-for="user in users" :key="user.username">
-              <span>{{ user.username }}</span>
               <i class="el-icon-chat-dot-round" style="margin-left:10px;font-size: 16px;cursor:pointer;"
-                 @click="chatUser = user.username"
-              ></i>
+                 @click="chooseChatUser(user.username)"
+              >
+                <span>{{ user.username }}</span>
+              </i>
               <span style="font-size: 12px;color:limegreen;margin-left: 5px"
                     v-if="user.username===chatUser">chatting...</span>
             </div>
           </el-card>
         </el-col>
+        <!--右侧主体聊天框-->
         <el-col :span="20">
           <div style="width: 800px;margin: 0 auto;background: #ffffff;border-radius: 5px;box-shadow: 0 0 10px #ccc">
             <div style="text-align: center;line-height: 50px">
@@ -37,60 +42,39 @@
       </el-row>
     </div>
   </el-dialog>
-  <!--当前用户-->
-  <!--<div class="el-row" style="padding:5px 0">-->
-  <!--  <div class="el-col el-col-22" style="text-align: right;padding-right: 10px">-->
-  <!--    <div class="tip left">text</div>-->
-  <!--  </div>-->
-  <!--  <div class="el-col el-col-2">-->
-  <!--    <span class="el-avatar el-avatar&#45;&#45;circle" style="height: 40px;line-height: 40px">-->
-  <!--      <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" style="object-fit: cover"-->
-  <!--           alt="头像">-->
-  <!--    </span>-->
-  <!--  </div>-->
-  <!--</div>-->
-  <!--接收方-->
-  <!--<div class="el-row" style="padding:5px 0">-->
-  <!--  <div class="el-col el-col-2" style="text-align: right;">-->
-  <!--       <span class="el-avatar el-avatar&#45;&#45;circle" style="height: 40px;line-height: 40px">-->
-  <!--      <img src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png" style="object-fit: cover"-->
-  <!--           alt="头像">-->
-  <!--    </span>-->
-  <!--  </div>-->
-  <!--  <div class="el-col el-col-22" style="text-align: left;padding-left: 10px">-->
-  <!--    <div class="tip left">text</div>-->
-  <!--  </div>-->
-  <!--</div>-->
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
+import {ref} from 'vue'
 import {ChatDotSquare} from "@element-plus/icons-vue";
 import {useUserStore} from "@/stores/user";
 import {ElMessage} from "element-plus";
-
+import request from '@/http'
 
 const chatDialog = ref(false)
-const showChatDialog = () => {
+const showChatDialog = async () => {
+  // 初始化连接，查询所有在线用户
+  establishConnection();
   chatDialog.value = true
 }
+
+const userStore = useUserStore()
 
 interface User {
   username: string
 }
 
-const user = ref<User>({
-  username: '' as string,
-})
-const username = ref('')
+const username = ref<string>('')
+
+//"users":"[{"username":"li"},{}]"
 const users = ref<User[]>([])
-const chatUser = ref('')
-const text = ref('')
-const content = ref('')
-const userStore = useUserStore()
-const messages = ref<[]>([])
-let socket: WebSocket = null;
-const init = () => {
+const chatUser = ref<string>('')
+const text = ref<string>('')
+const content = ref<string>('')
+let socket: WebSocket | null = null;
+
+// 初始化建立连接
+const establishConnection = () => {
   username.value = userStore.getUsername === '' ? '游客' : userStore.getUsername
   // 如果浏览器不支持websocket，会使用这个回调
   if (typeof (WebSocket) == "undefined") {
@@ -107,16 +91,16 @@ const init = () => {
     socket.onopen = function () {
       console.log("websocket已打开")
     }
-    //获取消息事件
-    socket.onmessage = function (msg: any) {
+    //从服务端获取消息
+    socket.onmessage = async function (msg) {
       console.log("收到数据====" + msg.data)
       let data = JSON.parse(msg.data)
       if (data.users) {
         // 过滤掉当前用户名
-        users.value = data.users.filter((user: any) => user.username !== username.value)
+        users.value = data.users.filter((user: User) => user.username !== username.value)
       } else {
-        if (data.from === chatUser) {
-          messages.push(data)
+        // 如果是当前chatUser用户发送的消息，则添加到消息列表中
+        if (data.from === chatUser.value) {
           createContent(data.from, null, data.text);
         }
       }
@@ -136,7 +120,7 @@ const createContent = (remoteUser: string | null, nowUser: string | null, text: 
     html =
         "  <div class=\"el-row\" style=\"padding:5px 0\">\n" +
         "    <div class=\"el-col el-col-22\" style=\"text-align: right;padding-right: 10px\">\n" +
-        "      <div class=\"tip left\">text</div>\n" +
+        "      <div class=\"tip left\">" + text + "</div>\n" +
         "    </div>\n" +
         "    <div class=\"el-col el-col-2\">\n" +
         "      <span class=\"el-avatar el-avatar--circle\" style=\"height: 40px;line-height: 40px\">\n" +
@@ -155,14 +139,15 @@ const createContent = (remoteUser: string | null, nowUser: string | null, text: 
         "      </span>\n" +
         "    </div>\n" +
         "    <div class=\"el-col el-col-22\" style=\"text-align: left;padding-left: 10px\">\n" +
-        "      <div class=\"tip left\">text</div>\n" +
+        "      <div class=\"tip left\">" + text + "</div>\n" +
         "    </div>\n" +
         "  </div>"
   }
   content.value += html;
 }
 
-const send = () => {
+// 用户发送消息
+const send = async () => {
   if (!chatUser) {
     ElMessage({
       type: "warning",
@@ -175,27 +160,68 @@ const send = () => {
       type: "warning",
       message: "请输入内容"
     })
-    return;
+
   } else {
     if (typeof (WebSocket) == 'undefined') {
       console.log("您的浏览器不支持WebSocket")
     } else {
       console.log("您的浏览器支持WebSocket")
-      let message = {
-        from: username.value,
-        to: chatUser,
-        text: text.value
+      // 发送消息给服务端，由服务端转发
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+          from: username.value,
+          to: chatUser.value,
+          text: text.value
+        }))
+        // 暂存消息，便于后续显示
+        let res = await request.post('/api/imserver/sendMessage', {
+          from: username.value,
+          to: chatUser.value,
+          text: text.value
+        });
+        if (res && res.code === 200) {
+          createContent(null, username.value, text.value)
+          text.value = '';
+        }
+      } else {
+        ElMessage({
+          type: "warning",
+          message: "连接已断开，请重新连接"
+        })
       }
-      socket.send(JSON.stringify(message))
-      message.push({user: username.value, text: text.value})
-      createContent(null, username.value, text.value)
-      text.value = '';
     }
   }
 }
-onMounted(() => {
-  init();
-})
+
+//获取历史消息
+const getHistoryMessage = async () => {
+  let res = await request.get("/api/imserver/getMessage", {from: username.value, to: chatUser.value, text: ''});
+  if (res && res.code === 200) {
+    for (let i = 0; i < JSON.stringify(res.data).length; i++) {
+      // res.data[i]
+      if (res.data[i].fromUser === username.value) {
+        createContent(null, username.value, res.data[i].text)
+      } else if (res.data[i].fromUser === chatUser.value) {
+        createContent(res.data[i].fromUser, null, res.data[i].text)
+      }
+    }
+  }
+
+}
+// 选择用户时，获取该用户历史消息
+const chooseChatUser = async (username: string) => {
+  //清空前一个聊天对象的消息列表
+  content.value = ''
+  chatUser.value = username
+  await getHistoryMessage();
+}
+const closeSocket = () => {
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.close(1000, "关闭连接")
+  }
+  content.value = ''
+  chatDialog.value = false
+}
 </script>
 
 <style scoped lang="scss">

@@ -26,22 +26,31 @@
         <!--右侧主体聊天框-->
         <el-col :span="20">
           <div style="width: 800px;margin: 0 auto;background: #ffffff;border-radius: 5px;box-shadow: 0 0 10px #ccc">
+            <!--Header头，聊天对象-->
             <div style="text-align: center;line-height: 50px">
               WEB聊天室({{ chatUser }})
             </div>
-            <div style="height: 350px;overflow: auto;border-top: 1px solid #ccc" v-html="content"></div>
-            <div style="height: 200px">
-              <el-input v-model="text" type="textarea"
-                        style="height: 160px;width: 100%;padding: 20px;border: none;border-top: 1px solid #ccc"></el-input>
+            <!--聊天内容主题-->
+            <div
+                style="height: 370px;overflow: auto;border-top: 1px solid #ccc;background: #f5f5f5;
+                color: #000000;font-family: 'HarmonyOS Sans SC',serif" v-html="content">
             </div>
-            <div style="text-align: right;padding-right: 10px">
-              <el-button type="primary" size="small" @click="send">发送</el-button>
+            <!--聊天输入文本框-->
+            <div style="height: auto;width: 100%">
+              <el-input v-model="text" type="textarea" :autosize="{ minRows: 6, maxRows: 6 }" resize="none"
+                        :show-word-limit="true" maxlength="2000"
+                        style="width: 100%;border-top: 1px solid #ccc;"></el-input>
+            </div>
+            <!--发送按钮-->
+            <div style="text-align: right;padding:10px">
+              <el-button type="primary" @click="send">发送</el-button>
             </div>
           </div>
         </el-col>
       </el-row>
     </div>
   </el-dialog>
+
 </template>
 
 <script setup lang="ts">
@@ -80,20 +89,14 @@ const establishConnection = () => {
   if (typeof (WebSocket) == "undefined") {
     console.log("您的浏览器不支持WebSocket")
   } else {
-    console.log("您的浏览器支持WebSocket")
     let socketUrl = "ws://localhost:8888/api/imserver/" + username.value;
     if (socket != null) {
       socket.close();
       socket = null;
     }
     socket = new WebSocket(socketUrl);
-    //打开事件onOpen
-    socket.onopen = function () {
-      console.log("websocket已打开")
-    }
     //从服务端获取消息
     socket.onmessage = async function (msg) {
-      console.log("收到数据====" + msg.data)
       let data = JSON.parse(msg.data)
       if (data.users) {
         // 过滤掉当前用户名
@@ -105,12 +108,6 @@ const establishConnection = () => {
         }
       }
     };
-    socket.onclose = function () {
-      console.log("连接已关闭")
-    }
-    socket.onerror = function () {
-      console.log("连接错误")
-    }
   }
 }
 // 将json数据转换成html，显示聊天内容
@@ -118,31 +115,31 @@ const createContent = (remoteUser: string | null, nowUser: string | null, text: 
   let html;
   if (nowUser) {
     html =
-        "  <div class=\"el-row\" style=\"padding:5px 0\">\n" +
-        "    <div class=\"el-col el-col-22\" style=\"text-align: right;padding-right: 10px\">\n" +
-        "      <div class=\"tip left\">" + text + "</div>\n" +
-        "    </div>\n" +
-        "    <div class=\"el-col el-col-2\">\n" +
-        "      <span class=\"el-avatar el-avatar--circle\" style=\"height: 40px;line-height: 40px\">\n" +
-        "        <img src=\"https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png\" style=\"object-fit: cover\"\n" +
-        "             alt=\"头像\">\n" +
-        "      </span>\n" +
-        "    </div>\n" +
-        "  </div>"
+        "    <div style=\"padding: 5px 0;background: #ffffff;box-sizing: border-box;width:100%;overflow: auto\">\n" +
+        "        <div style=\"float: right;margin: 15px\">\n" +
+        "          <img src=\"https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png\"\n" +
+        "               style=\"object-fit: cover;height: 40px;line-height: 40px\" alt=\"头像\"/>\n" +
+        "        </div>\n" +
+        "        <div\n" +
+        "            style=\"background: #2a9ffc;width: auto;max-width: 70%;float: right;margin-top: 25px;margin-bottom: 25px;border-radius: 5px;box-shadow: 5px 5px 5px #dedede\">\n" +
+        "          <p style=\"box-sizing: border-box;padding: 0 10px;\">\n" +
+        "           " + text + "</p>\n" +
+        "        </div>\n" +
+        "      </div>"
   } else if (remoteUser) {
     html =
-        "  <div class=\"el-row\" style=\"padding:5px 0\">\n" +
-        "    <div class=\"el-col el-col-2\" style=\"text-align: right;\">\n" +
-        "         <span class=\"el-avatar el-avatar--circle\" style=\"height: 40px;line-height: 40px\">\n" +
-        "        <img src=\"https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png\" style=\"object-fit: cover\"\n" +
-        "             alt=\"头像\">\n" +
-        "      </span>\n" +
-        "    </div>\n" +
-        "    <div class=\"el-col el-col-22\" style=\"text-align: left;padding-left: 10px\">\n" +
-        "      <div class=\"tip left\">" + text + "</div>\n" +
-        "    </div>\n" +
-        "  </div>"
+        "     <div style=\"padding: 5px 0;background: #ffffff;box-sizing: border-box;overflow: auto\">\n" +
+        "        <div style=\"float: left;margin: 15px\">\n" +
+        "          <img src=\"https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png\" style=\"object-fit: cover;height: 40px;line-height: 40px\" alt=\"头像\"/>\n" +
+        "        </div>\n" +
+        "        <div style=\"background: #21f848;width: auto;max-width: 70%;float: left;margin-top: 25px;margin-bottom: 25px;border-radius: 5px;\n" +
+        "box-shadow: 5px 5px 5px #dedede\">\n" +
+        "          <p style=\"box-sizing: border-box;padding: 0 10px\">\n" +
+        "           " + text + "</p>\n" +
+        "        </div>\n" +
+        "      </div>"
   }
+
   content.value += html;
 }
 
@@ -165,21 +162,20 @@ const send = async () => {
     if (typeof (WebSocket) == 'undefined') {
       console.log("您的浏览器不支持WebSocket")
     } else {
-      console.log("您的浏览器支持WebSocket")
       // 发送消息给服务端，由服务端转发
       if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({
-          from: username.value,
-          to: chatUser.value,
-          text: text.value
-        }))
-        // 暂存消息，便于后续显示
         let res = await request.post('/api/imserver/sendMessage', {
           from: username.value,
           to: chatUser.value,
           text: text.value
         });
+        // 暂存消息，便于后续显示
         if (res && res.code === 200) {
+          socket.send(JSON.stringify({
+            from: username.value,
+            to: chatUser.value,
+            text: text.value
+          }))
           createContent(null, username.value, text.value)
           text.value = '';
         }
@@ -219,7 +215,7 @@ const closeSocket = () => {
   if (socket && socket.readyState === WebSocket.OPEN) {
     socket.close(1000, "关闭连接")
   }
-  content.value = ''
+  // content.value = ''
   chatDialog.value = false
 }
 </script>
